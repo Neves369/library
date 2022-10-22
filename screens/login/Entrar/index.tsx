@@ -144,7 +144,7 @@ const Entrar: React.FC = ({ navigation }: any) => {
           animation="fadeInUp"
           delay={1200}
         >
-          Litterae
+          Teste
         </Animatable.Text>
         <LottieView
           speed={0.5}
