@@ -4,10 +4,10 @@
     "slug": "litterae",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/union.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "updates": {
@@ -21,9 +21,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/union.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.neves369.litterae"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,20 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { DarkTheme, NavigationContainer } from "@react-navigation/native";
+import { StatusBar } from "react-native";
+import { AuthProvider } from "./contexts/auth";
+import { Provider as PaperProvider } from "react-native-paper";
+import Routes from "./routes";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-export default function App() {
+const App: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer theme={DarkTheme}>
+      <StatusBar translucent backgroundColor="transparent" />
+      <AuthProvider>
+        <PaperProvider>
+          <SafeAreaProvider>
+            <Routes />
+          </SafeAreaProvider>
+        </PaperProvider>
+      </AuthProvider>
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
