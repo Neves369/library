@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "litterae",
+    "slug": "litterae",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/union.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#000000"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/union.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.neves369.litterae",
+      "versionCode": "1"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c7804a98-0792-4411-8cb7-cf453948a2ef"
+      }
+    }
+  }
+}
