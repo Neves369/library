@@ -9,7 +9,6 @@ import {
   Keyboard,
   Dimensions,
   StyleSheet,
-  ToastAndroid,
 } from "react-native";
 import {
   Conteudo,
@@ -27,7 +26,6 @@ import {
 } from "./style";
 import * as Animatable from "react-native-animatable";
 import AuthContext from "../../../contexts/auth";
-// import LoginService from "../../../services/LoginService";
 import {
   ActivityIndicator,
   Card,

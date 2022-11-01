@@ -3,8 +3,6 @@ import pageFilledIcon from "../../assets/icons/page_filled_icon.png";
 import bookmarkIcon from "../../assets/icons/mark_icon.png";
 import readIcon from "../../assets/icons/read_icon.png";
 import background from "../../assets/background.png";
-import easteregg from "../../assets/easteregg.gif";
-import Books from "../../Books.json";
 import {
   View,
   Text,
@@ -36,6 +34,8 @@ import {
   AntDesign,
 } from "@expo/vector-icons";
 import AuthContext from "../../contexts/auth";
+import { db } from "../../config/index"; 
+import bookService from "../../service/bookService";
 
 const Todos: React.FC = ({ navigation }: any) => {
   const profileData = {
@@ -43,10 +43,24 @@ const Todos: React.FC = ({ navigation }: any) => {
     point: 200,
   };
 
+  const [books, setBooks] = useState([]);
   const [visible, setVisible] = useState(false);
   const [profile, setProfile] = useState(profileData);
-  const [myBooks, setMyBooks] = useState(Books.books);
+  const [myBooks, setMyBooks] = useState([]);
   const { user, signIn, changeLogando, signOut } = useContext(AuthContext);
+
+
+  useEffect(() => {
+    getBooks()
+  }, [])
+  
+  const getBooks = async() => {
+    await bookService.getBooks().then((resp: any) => {
+      if (resp.status == 200) {
+        setMyBooks(resp.data);
+      }
+    });
+  }
 
   function renderHeader(profile: any) {
     return (
@@ -122,7 +136,6 @@ const Todos: React.FC = ({ navigation }: any) => {
             borderRadius: 12,
           }}
         >
-          {/* Claim */}
           <TouchableOpacity
             style={{
               flex: 1,
@@ -130,7 +143,7 @@ const Todos: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
               paddingTop: 10,
             }}
-            onPress={() => console.log("Claim")}
+            onPress={() =>{navigation.navigate("Dashboard")}}
           >
             <FontAwesome name="folder-open" size={24} color="white" />
             <View style={{ flex: 1 }}>
@@ -142,12 +155,11 @@ const Todos: React.FC = ({ navigation }: any) => {
                   color: "#E7E7E7",
                 }}
               >
-                Categorias
+                Retornar
               </Text>
             </View>
           </TouchableOpacity>
 
-          {/* Divider */}
           <LineDivider>
             <View
               style={{
@@ -166,12 +178,12 @@ const Todos: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
               paddingTop: 10,
             }}
-            onPress={() =>{navigation.navigate("Dashboard")}}
+          
           >
-            <Foundation name="page-multiple" size={24} color="white" />
+            <FontAwesome name="folder-open" size={24} color="white" />
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 16, lineHeight: 22, color: "#E7E7E7" }}>
-                Pág. Inicial
+                Categorias
               </Text>
             </View>
           </TouchableOpacity>
@@ -380,7 +392,7 @@ const Todos: React.FC = ({ navigation }: any) => {
         <FlatList
           data={myBooks}
           renderItem={renderItem}
-          keyExtractor={(item) => `${item.id}`}
+          keyExtractor={(item) => `${item._id}`}
           showsVerticalScrollIndicator={false}
         />
       </View>

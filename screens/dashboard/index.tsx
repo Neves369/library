@@ -36,13 +36,14 @@ import {
   AntDesign,
 } from "@expo/vector-icons";
 import AuthContext from "../../contexts/auth";
+import { db } from "../../config/index";
 
 const Dashboard: React.FC = ({ navigation }: any) => {
+
   const profileData = {
     name: "Usuário Teste",
     point: 200,
   };
-
 
   const listCategorias = [
     {
@@ -68,6 +69,11 @@ const Dashboard: React.FC = ({ navigation }: any) => {
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [categorias, setCategorias] = useState(listCategorias);
   const { user, signIn, changeLogando, signOut } = useContext(AuthContext);
+
+  useEffect(() => {
+
+  }, [])
+  
 
   function renderHeader(profile: any) {
     return (

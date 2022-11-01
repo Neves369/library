@@ -43,7 +43,8 @@ import {
   Entypo,
 } from "@expo/vector-icons";
 import * as Animatable from "react-native-animatable";
-// import LoginService from "../../../services/LoginService";
+import {getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import fb from "../../../config";
 import AuthContext from "../../../contexts/auth";
 import { TextInputMask } from "react-native-masked-text";
 
