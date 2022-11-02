@@ -1,23 +1,24 @@
 import api from "../api/api";
+import IUser from "../models/IUser";
 import exceptionHandler from "../utils/ExceptionHandler";
 
 
-const login = async (cliente: object) => {
+const login = async (user: IUser) => {
     try {
-        return await api.get(`/cliente/login`, {
+        return await api.get(`/auth/authenticate`, {
             headers: {
-                Token: "77f04b5e-60af-40ac-9063-6bbebdfac8e8",
-                email: `${cliente.email}`,
-                senha: `${cliente.senha}`
+                email: `${user.email}`,
+                senha: `${user.senha}`
             }
         })
        
     } catch (error) {
+        console.log(error)
         return exceptionHandler(error);
     }
 }
 
-const salvarCliente = async (cliente: object) => {
+const salvarUser = async (cliente: object) => {
     try {
         return await api.post(`/cliente/salvar`, cliente, {
             headers: {
@@ -30,7 +31,7 @@ const salvarCliente = async (cliente: object) => {
     }
 }
 
-const getCliente = async (clienteId: string) => {
+const getUser = async (clienteId: string) => {
     try {
         return await api.get(`/cliente/id/${clienteId}`, {
             headers: {
@@ -43,7 +44,7 @@ const getCliente = async (clienteId: string) => {
     }
 }
 
-const atualizarCliente = async (cliente: object) => {
+const atualizarUser = async (cliente: object) => {
     try {
         return await api.put(`/cliente/atualizar`, cliente, {
             headers: {
@@ -69,7 +70,7 @@ const atualizarSenha = async (senhas: object) => {
     }
 }
 
-const inativarCliente = async (cliente: object) => {
+const inativarUser = async (cliente: object) => {
     try {
         return await api.put(`/cliente/inativar/${cliente.id}`, null, {
             headers: {
@@ -99,10 +100,10 @@ const recuperarSenha = async (email: string) => {
 
 export default {
     login,
-    getCliente,
-    salvarCliente,
-    atualizarCliente,
+    getUser,
+    salvarUser,
+    atualizarUser,
     atualizarSenha,
     recuperarSenha,
-    inativarCliente
+    inativarUser
 }

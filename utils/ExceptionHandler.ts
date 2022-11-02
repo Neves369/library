@@ -2,7 +2,7 @@ const exceptionHandler = ( error: any ) => {
 
 
     if(error.status != 200){
-     return console.log("deu ruim",error);        
+     return error;        
     }
 
 }

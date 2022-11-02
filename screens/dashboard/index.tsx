@@ -3,7 +3,6 @@ import pageFilledIcon from "../../assets/icons/page_filled_icon.png";
 import bookmarkIcon from "../../assets/icons/mark_icon.png";
 import readIcon from "../../assets/icons/read_icon.png";
 import background from "../../assets/background.png";
-import easteregg from "../../assets/easteregg.gif";
 import Books from "../../Books.json";
 import {
   View,
@@ -36,14 +35,10 @@ import {
   AntDesign,
 } from "@expo/vector-icons";
 import AuthContext from "../../contexts/auth";
-import { db } from "../../config/index";
 
 const Dashboard: React.FC = ({ navigation }: any) => {
 
-  const profileData = {
-    name: "Usuário Teste",
-    point: 200,
-  };
+
 
   const listCategorias = [
     {
@@ -64,8 +59,8 @@ const Dashboard: React.FC = ({ navigation }: any) => {
   ];
 
   const [visible, setVisible] = useState(false);
-  const [profile, setProfile] = useState(profileData);
-  const [myBooks, setMyBooks] = useState(Books.books);
+  const [myBooks, setMyBooks] = useState([]);
+  const [initialBooks, setInitialBooks] = useState(Books.books);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [categorias, setCategorias] = useState(listCategorias);
   const { user, signIn, changeLogando, signOut } = useContext(AuthContext);
@@ -75,7 +70,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
   }, [])
   
 
-  function renderHeader(profile: any) {
+  function renderHeader() {
     return (
       <View
         style={{
@@ -106,7 +101,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
                 lineHeight: 30,
               }}
             >
-              {profile.name}
+              {user.nome}
             </Text>
           </View>
         </View>
@@ -157,7 +152,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
               paddingTop: 10,
             }}
-            onPress={() => console.log("Claim")}
+            onPress={() => navigation.navigate("Categorias")}
           >
             <FontAwesome name="folder-open" size={24} color="white" />
             <View style={{ flex: 1 }}>
@@ -193,7 +188,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
               paddingTop: 10,
             }}
-            onPress={() => navigation.navigate("Todos")}
+            onPress={() => navigation.navigate("ListaLivros")}
           >
             <Foundation name="page-multiple" size={24} color="white" />
             <View style={{ flex: 1 }}>
@@ -318,12 +313,12 @@ const Dashboard: React.FC = ({ navigation }: any) => {
         >
           {selectedCategory == item.id && (
             <Text style={{ fontSize: 22, lineHeight: 30, color: "#E7E7E7" }}>
-              {item.categoria}
+              {item.titulo}
             </Text>
           )}
           {selectedCategory != item.id && (
             <Text style={{ fontSize: 22, lineHeight: 30, color: "#64676D" }}>
-              {item.categoria}
+              {item.titulo}
             </Text>
           )}
         </TouchableOpacity>
@@ -351,7 +346,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
     );
 
     if (selectedCategoryBooks.length > 0) {
-      myBooks.forEach(book => {
+      initialBooks.forEach(book => {
         if(book.categoria == selectedCategoryBooks[0].categoria){
           books.push(book)
         }
@@ -539,13 +534,17 @@ const Dashboard: React.FC = ({ navigation }: any) => {
     <Container>
       <Fundo source={background}>
         <Header>
-          {renderHeader(profile)}
+          {renderHeader()}
           {renderButtonSection()}
         </Header>
 
         <ScrollView style={{ marginTop: 12, marginBottom: 50 }}>
-          <View>{renderMyBookSection(myBooks)}</View>
-
+          {
+            myBooks.length > 0?
+              <View>{renderMyBookSection(myBooks)}</View>
+            :
+              <></>
+          }
           <View style={{ marginTop: 24 }}>
             <View>{renderCategoryHeader()}</View>
 

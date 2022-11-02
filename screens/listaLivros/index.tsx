@@ -29,15 +29,13 @@ import {
   FontAwesome,
   Fontisto,
   Entypo,
-  FontAwesome5,
-  Foundation,
-  AntDesign,
+  Ionicons,
+  FontAwesome5
 } from "@expo/vector-icons";
 import AuthContext from "../../contexts/auth";
-import { db } from "../../config/index"; 
 import bookService from "../../service/bookService";
 
-const Todos: React.FC = ({ navigation }: any) => {
+const ListaLivros: React.FC = ({ navigation }: any) => {
   const profileData = {
     name: "Usuário Teste",
     point: 200,
@@ -145,7 +143,7 @@ const Todos: React.FC = ({ navigation }: any) => {
             }}
             onPress={() =>{navigation.navigate("Dashboard")}}
           >
-            <FontAwesome name="folder-open" size={24} color="white" />
+            <Ionicons name="return-down-back-sharp" size={24} color="white" />
             <View style={{ flex: 1 }}>
               <Text
                 style={{
@@ -178,7 +176,7 @@ const Todos: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
               paddingTop: 10,
             }}
-          
+            onPress={() =>{navigation.navigate("Categorias")}}
           >
             <FontAwesome name="folder-open" size={24} color="white" />
             <View style={{ flex: 1 }}>
@@ -441,4 +439,4 @@ const Todos: React.FC = ({ navigation }: any) => {
   );
 };
 
-export default Todos;
+export default ListaLivros;

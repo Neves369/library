@@ -38,8 +38,8 @@ import {
   useTheme,
 } from "react-native-paper";
 import { TextInputMask } from "react-native-masked-text";
+import userService from "../../../service/userService";
 // import checkVersion from "../../../utils/CheckStoreVersion";
-// import config from "../../../api/config";
 
 const Entrar: React.FC = ({ navigation }: any) => {
   const { colors } = useTheme();
@@ -60,46 +60,39 @@ const Entrar: React.FC = ({ navigation }: any) => {
   const hideModal = () => setVisible(false);
 
   const handleLogin = async (data: any) => {
-    signIn(null);
-    // setLoading(true)
-    // await LoginService.logar(user)
-    // .then((resp: any)=>{
-    //   ToastAndroid.show(resp.status, ToastAndroid.SHORT)
-    //   if(resp.status == 200){
-    //     setLoading(false)
-    //     if (resp.data.length >= 2){
-    //       navigation.navigate('EscolherSubContrato', resp.data);
-    //     }
-    //     else{
-    //       changeLogando(true),
-    //       signIn(resp.data[0])
-    //     }
-    //   }
-    //   if(Math.trunc(resp.status/ 100)== 4){
-    //     return(
-    //       setLoading(false),
-    //       setTitle("Aviso"),
-    //       setMessage(resp.titulo),
-    //       setVisible(true)
-    //     )
-    //   }
-    //   if(Math.trunc(resp.status / 100) == 5){
-    //     return(
-    //       setLoading(false),
-    //       setTitle("Erro"),
-    //       setMessage(resp.titulo),
-    //       setVisible(true)
-    //     )
-    //   }
-    // })
-    // .catch((resp: any)=>{
-    //   return(
-    //     setLoading(false),
-    //     setTitle("Erro"),
-    //     setMessage(resp.titulo),
-    //     setVisible(true)
-    //   )
-    // })
+    setLoading(true)
+    await userService.login(data)
+    .then((resp: any)=>{
+      if(resp.status == 200){
+        setLoading(false)
+        signIn(resp.data)
+        
+      }
+      if(Math.trunc(resp.status/ 100)== 4){
+        return(
+          setLoading(false),
+          setTitle("Aviso"),
+          setMessage(resp.titulo),
+          setVisible(true)
+        )
+      }
+      if(Math.trunc(resp.status / 100) == 5){
+        return(
+          setLoading(false),
+          setTitle("Erro"),
+          setMessage(resp.titulo),
+          setVisible(true)
+        )
+      }
+    })
+    .catch((resp: any)=>{
+      return(
+        setLoading(false),
+        setTitle("Erro"),
+        setMessage(resp.titulo),
+        setVisible(true)
+      )
+    })
   };
 
   const verifyUpdateStore = async () => {
@@ -150,7 +143,7 @@ const Entrar: React.FC = ({ navigation }: any) => {
           </LoginText>
           <Controller
             control={control}
-            name="Email"
+            name="email"
             rules={{
               required: true,
             }}
@@ -182,7 +175,7 @@ const Entrar: React.FC = ({ navigation }: any) => {
 
           <Controller
             control={control}
-            name="Senha"
+            name="senha"
             rules={{
               required: true,
             }}

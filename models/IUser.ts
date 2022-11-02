@@ -3,8 +3,7 @@ interface IUser {
     nome: string,
     email: string,
     senha: string,
-    status: boolean,
-    nickname: string,
+    token: string,
 }
 
 export default IUser;
