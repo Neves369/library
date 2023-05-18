@@ -1,122 +1,64 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useForm, Controller } from "react-hook-form";
 import Background from "../../../assets/background.png";
-import { AntDesign, Entypo } from "@expo/vector-icons";
+import userService from "../../../service/userService";
+import { useForm, Controller } from "react-hook-form";
+import * as Animatable from "react-native-animatable";
+import React, { useState, useContext } from "react";
+import AuthContext from "../../../contexts/auth";
 import LottieView from "lottie-react-native";
+import { Entypo } from "@expo/vector-icons";
 import {
-  TouchableWithoutFeedback,
   View,
   Keyboard,
+  TextInput,
   Dimensions,
   StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from "react-native";
-import {
-  Conteudo,
-  Container,
-  InputView,
-  TextFp,
-  TextRegister,
-  ButtonLogin,
-  TextButton,
-  LoginText,
-  TextInput,
-  Fundo,
-  ButtonModal,
-  DividerModal,
-} from "./style";
-import * as Animatable from "react-native-animatable";
-import AuthContext from "../../../contexts/auth";
-import {
-  ActivityIndicator,
-  Card,
-  Divider,
-  Modal,
-  Paragraph,
-  Portal,
-  Text,
-  Title,
-  useTheme,
-} from "react-native-paper";
-import { TextInputMask } from "react-native-masked-text";
-import userService from "../../../service/userService";
-// import checkVersion from "../../../utils/CheckStoreVersion";
+
+import { Text, useTheme, ActivityIndicator } from "react-native-paper";
 
 const Entrar: React.FC = ({ navigation }: any) => {
   const { colors } = useTheme();
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
-  const [update, setUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const { user, signIn, changeLogando } = useContext(AuthContext);
+  const { signIn }: any = useContext(AuthContext);
   const {
     control,
     handleSubmit,
-    setValue,
-    reset,
     formState: { errors },
   } = useForm();
 
-  const hideModal = () => setVisible(false);
-
   const handleLogin = async (data: any) => {
-    setLoading(true)
-    await userService.login(data)
-    .then((resp: any)=>{
-      if(resp.status == 200){
-        setLoading(false)
-        signIn(resp.data)
-        
-      }
-      if(Math.trunc(resp.status/ 100)== 4){
-        return(
-          setLoading(false),
-          setTitle("Aviso"),
-          setMessage(resp.titulo),
-          setVisible(true)
-        )
-      }
-      if(Math.trunc(resp.status / 100) == 5){
-        return(
-          setLoading(false),
-          setTitle("Erro"),
-          setMessage(resp.titulo),
-          setVisible(true)
-        )
-      }
-    })
-    .catch((resp: any)=>{
-      return(
-        setLoading(false),
-        setTitle("Erro"),
-        setMessage(resp.titulo),
-        setVisible(true)
-      )
-    })
+    setLoading(true);
+    await userService
+      .login(data)
+      .then((resp: any) => {
+        if (resp.status == 200) {
+          setLoading(false);
+          signIn(resp.data);
+        }
+        if (Math.trunc(resp.status / 100) == 4) {
+          return setLoading(false);
+        }
+        if (Math.trunc(resp.status / 100) == 5) {
+          return setLoading(false);
+        }
+      })
+      .catch((resp: any) => {
+        return setLoading(false);
+      });
   };
-
-  const verifyUpdateStore = async () => {
-    // try {
-    //   const check = await checkVersion();
-    //   if (check.result === "new") {
-    //     setTimeout(() => {
-    //       setUpdate(true);
-    //     }, 2000);
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
-  };
-
-  useEffect(() => {
-    verifyUpdateStore();
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <Container>
+      <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <Fundo resizeMode="stretch" source={Background} />
+          <ImageBackground
+            style={{ flex: 1 }}
+            resizeMode="stretch"
+            source={Background}
+          />
         </View>
         <Animatable.Text
           style={styles.titleText}
@@ -132,15 +74,29 @@ const Entrar: React.FC = ({ navigation }: any) => {
           loop
           resizeMode="contain"
         />
-        <Conteudo>
-          <LoginText
+        <View
+          style={{
+            backgroundColor: "#fff",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            padding: 20,
+          }}
+        >
+          <Text
             style={{
-              color: colors.text,
-              
+              margin: 4,
+              color: "#000",
+              fontSize: 16,
+              lineHeight: 22,
+              fontWeight: "700",
             }}
           >
-            Login
-          </LoginText>
+            LOGIN
+          </Text>
           <Controller
             control={control}
             name="email"
@@ -148,7 +104,17 @@ const Entrar: React.FC = ({ navigation }: any) => {
               required: true,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <InputView>
+              <View
+                style={{
+                  height: 40,
+                  borderRadius: 10,
+                  backgroundColor: "#f1f3f6",
+                  marginTop: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
                 <Entypo
                   name="email"
                   size={24}
@@ -156,8 +122,14 @@ const Entrar: React.FC = ({ navigation }: any) => {
                   style={styles.inputIcon}
                 />
                 <TextInput
+                  style={{
+                    height: 40,
+                    width: "100%",
+                    flex: 1,
+                    fontSize: 16,
+                    color: "#333",
+                  }}
                   placeholder="E-mail"
-                  label={"E-mail"}
                   autoCapitalize="none"
                   keyboardType="email-address"
                   textContentType="emailAddress"
@@ -166,10 +138,10 @@ const Entrar: React.FC = ({ navigation }: any) => {
                   onChangeText={(value: any) => onChange(value)}
                   value={value}
                 />
-              </InputView>
+              </View>
             )}
           />
-          {errors.Email && (
+          {errors.email && (
             <Text style={{ color: colors.error }}>E-mail é obrigatório.</Text>
           )}
 
@@ -180,7 +152,18 @@ const Entrar: React.FC = ({ navigation }: any) => {
               required: true,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <InputView>
+              <View
+                style={{
+                  height: 40,
+                  width: "100%",
+                  borderRadius: 10,
+                  backgroundColor: "#f1f3f6",
+                  marginTop: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
                 <Entypo
                   style={styles.inputIcon}
                   name="lock"
@@ -188,8 +171,13 @@ const Entrar: React.FC = ({ navigation }: any) => {
                   color="#5352A0"
                 />
                 <TextInput
+                  style={{
+                    height: 40,
+                    flex: 1,
+                    fontSize: 16,
+                    color: "#333",
+                  }}
                   placeholder="Senha"
-                  label={"Senha"}
                   secureTextEntry={true}
                   maxLength={12}
                   autoCapitalize="none"
@@ -197,36 +185,58 @@ const Entrar: React.FC = ({ navigation }: any) => {
                   onChangeText={(value: any) => onChange(value)}
                   value={value}
                 />
-              </InputView>
+              </View>
             )}
           />
-          {errors.Senha && (
-            <Text style={{ color: "#5352A0" }}>Senha é obrigatória.</Text>
+          {errors.senha && (
+            <Text style={{ color: colors.error }}>Senha é obrigatória.</Text>
           )}
-          <TextFp
+          <Text
             style={{
               color: "#5352A0",
+              marginTop: 10,
+              alignSelf: "flex-end",
+              fontSize: 16,
             }}
             onPress={() => {
               navigation.navigate("EsqueciASenha");
             }}
           >
             Esqueceu a senha?
-          </TextFp>
-          <ButtonLogin
+          </Text>
+          <TouchableOpacity
             style={{
               backgroundColor: "#5352A0",
+              flexDirection: "row",
+              padding: 10,
+              borderRadius: 8,
+              marginTop: 10,
             }}
             onPress={handleSubmit(handleLogin)}
           >
             {loading ? (
               <ActivityIndicator animating={true} color="white" />
             ) : (
-              <TextButton>Entrar</TextButton>
+              <Entypo
+                name="bookmark"
+                style={{ width: 25 }}
+                size={24}
+                color="white"
+              />
             )}
-          </ButtonLogin>
-          
-          <TextRegister style={{ color: colors.text }}>
+            <Text
+              style={{
+                textAlign: "center",
+                width: "85%",
+                color: "#fff",
+                fontSize: 18,
+              }}
+            >
+              Entrar
+            </Text>
+          </TouchableOpacity>
+
+          <Text style={{ marginTop: 10, color: "black" }}>
             Retornar a tela anterior?
             <Text
               style={{ color: "#5352A0" }}
@@ -236,74 +246,9 @@ const Entrar: React.FC = ({ navigation }: any) => {
             >
               {" Retornar"}
             </Text>
-          </TextRegister>
-        </Conteudo>
-
-        <Portal>
-          <Modal
-            visible={visible}
-            onDismiss={hideModal}
-            contentContainerStyle={{ padding: 20 }}
-          >
-            <Card style={styles.iosCard}>
-              <Card.Content>
-                <Title style={styles.titleCard}>{title}</Title>
-                <Paragraph style={styles.textCard}>{message}</Paragraph>
-              </Card.Content>
-              <DividerModal />
-              <Card.Actions>
-                <ButtonModal onPress={() => setVisible(false)}>
-                  <Text
-                    style={{
-                      color: colors.error,
-                    }}
-                  >
-                    Fechar
-                  </Text>
-                </ButtonModal>
-              </Card.Actions>
-            </Card>
-          </Modal>
-        </Portal>
-
-        <Portal>
-          <Modal
-            visible={update}
-            onDismiss={hideModal}
-            contentContainerStyle={{ padding: 20 }}
-          >
-            <Card style={styles.iosCard}>
-              <Card.Content>
-                <Title style={styles.titleCard}>Atualização Disponível!</Title>
-                <Paragraph style={[styles.textCard, { paddingHorizontal: 50 }]}>
-                  Há uma atualização dísponível, deseja seguir para a loja?
-                </Paragraph>
-              </Card.Content>
-              <DividerModal />
-              <Card.Actions>
-                <ButtonModal onPress={() => setVisible(false)}>
-                  <Text
-                    style={{
-                      color: colors.error,
-                    }}
-                  >
-                    Fechar
-                  </Text>
-                </ButtonModal>
-                <ButtonModal onPress={() => setVisible(false)}>
-                  <Text
-                    style={{
-                      color: colors.primary,
-                    }}
-                  >
-                    Ir para loja
-                  </Text>
-                </ButtonModal>
-              </Card.Actions>
-            </Card>
-          </Modal>
-        </Portal>
-      </Container>
+          </Text>
+        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -312,8 +257,8 @@ export default Entrar;
 
 const styles = StyleSheet.create({
   titleText: {
-    position: "absolute",
     top: Dimensions.get("screen").height * 0.1,
+    position: "absolute",
     alignSelf: "center",
     color: "#fff",
     fontSize: 60,
@@ -328,17 +273,5 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     paddingHorizontal: 8,
-  },
-  iosCard: {
-    backgroundColor: "rgba(230, 230, 230, 0.9)",
-    elevation: 0,
-    borderRadius: 15,
-  },
-  titleCard: {
-    textAlign: "center",
-  },
-  textCard: {
-    minHeight: 50,
-    textAlign: "center",
   },
 });

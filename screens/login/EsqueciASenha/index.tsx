@@ -1,57 +1,26 @@
-import React, { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { VerificaCPF } from "../../../utils/ValidarCPF";
 import Background from "../../../assets/background.png";
-import { Entypo } from "@expo/vector-icons";
+import React, { useState, useEffect } from "react";
 import LottieView from "lottie-react-native";
+import { Entypo } from "@expo/vector-icons";
 import {
-  TouchableWithoutFeedback,
   View,
-  Image,
   Keyboard,
-  TouchableOpacity,
   Dimensions,
   StyleSheet,
-} from "react-native";
-import {
-  Conteudo,
-  Container,
-  InputView,
-  TextFp,
-  TextRegister,
-  ButtonLogin,
-  TextButton,
-  LoginText,
+  ImageBackground,
+  TouchableWithoutFeedback,
   TextInput,
-  Fundo,
-  ButtonModal,
-} from "./style";
-import {
-  Card,
-  Divider,
-  Modal,
-  Paragraph,
-  Portal,
-  Text,
-  Title,
-  useTheme,
-} from "react-native-paper";
-// import { Icon } from 'react-native-elements';
+  TouchableOpacity,
+} from "react-native";
+
+import { Text, useTheme } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 
 const EsqueciASenha: React.FC = ({ navigation }: any) => {
   const { colors } = useTheme();
   const [email, setEmail] = useState("");
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
   const [enviado, setEnviado] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [timerCount, setTimer] = useState<number>(0);
-  const [typeMessage, setTypeMessage] = useState("");
-
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
 
   useEffect(() => {
     if (timerCount != 0) {
@@ -75,17 +44,22 @@ const EsqueciASenha: React.FC = ({ navigation }: any) => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <Container>
+      <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <Fundo source={Background} resizeMode="stretch" />
+          <ImageBackground
+            style={{ flex: 1 }}
+            resizeMode="stretch"
+            source={Background}
+          />
         </View>
         <Animatable.Text
-          style={styles.titleText}
+          style={[styles.titleText, { zIndex: 1 }]}
           animation="fadeInUp"
           delay={1200}
         >
           Litterae
         </Animatable.Text>
+
         <LottieView
           speed={0.5}
           source={require("../../../assets/images/rocket.json")}
@@ -93,24 +67,46 @@ const EsqueciASenha: React.FC = ({ navigation }: any) => {
           loop
           resizeMode="contain"
         />
-        <Conteudo>
-          <LoginText
+        <View
+          style={{
+            backgroundColor: "#fff",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            padding: 20,
+          }}
+        >
+          <Text
             style={{
-              color: colors.text,
+              margin: 4,
+              color: "#000",
+              fontSize: 16,
+              lineHeight: 22,
+              fontWeight: "700",
             }}
           >
-            Esqueci a senha
-          </LoginText>
-          <TextRegister
-            style={{
-              color: colors.text,
-            }}
-          >
+            RECUPERAR
+          </Text>
+          <Text style={{ marginTop: 10, color: "black" }}>
             {enviado
               ? "Foi enviada uma mensagem ao seu e-mail com as instruções para recuperação da sua senha."
               : "Por favor confirme seu E-mail, será enviado um e-mail para auxiliá-lo na recuperação de sua conta"}
-          </TextRegister>
-          <InputView>
+          </Text>
+
+          <View
+            style={{
+              height: 40,
+              borderRadius: 10,
+              backgroundColor: "#f1f3f6",
+              marginTop: 10,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
             <Entypo
               name="email"
               size={24}
@@ -118,6 +114,13 @@ const EsqueciASenha: React.FC = ({ navigation }: any) => {
               style={styles.inputIcon}
             />
             <TextInput
+              style={{
+                height: 40,
+                width: "100%",
+                flex: 1,
+                fontSize: 16,
+                color: "#333",
+              }}
               placeholder="E-mail"
               maxLength={60}
               autoCapitalize="none"
@@ -125,39 +128,42 @@ const EsqueciASenha: React.FC = ({ navigation }: any) => {
               textContentType="emailAddress"
               onChangeText={(text: any) => setEmail(text)}
             />
-          </InputView>
+          </View>
           {timerCount == 0 ? (
             <></>
           ) : (
-            <Text>
+            <Text style={{ color: "black" }}>
               Nova tentativa em {timerCount}
               {timerCount == 1 ? " segundo" : " segundos"}
             </Text>
           )}
-          <ButtonLogin
+          <TouchableOpacity
+            style={{
+              backgroundColor: timerCount == 0 ? "#5352A0" : "grey",
+              flexDirection: "row",
+              padding: 10,
+              borderRadius: 8,
+              marginTop: 10,
+            }}
             onPress={() => {
               if (email) {
                 Enviar();
               }
             }}
-            style={{
-              backgroundColor:
-                timerCount == 0 ? "#5352A0" : colors.disabled,
-            }}
           >
-            <TextButton
+            <Text
               style={{
-                color: "white",
+                textAlign: "center",
+                width: "85%",
+                color: "#fff",
+                fontSize: 18,
               }}
             >
               Enviar
-            </TextButton>
-          </ButtonLogin>
-          <TextRegister
-            style={{
-              color: colors.text,
-            }}
-          >
+            </Text>
+          </TouchableOpacity>
+
+          <Text style={{ marginTop: 10, color: "black" }}>
             Retornar a tela de Login?
             <Text
               style={{
@@ -169,35 +175,9 @@ const EsqueciASenha: React.FC = ({ navigation }: any) => {
             >
               {" Entrar"}
             </Text>
-          </TextRegister>
-        </Conteudo>
-        <Portal>
-          <Modal
-            visible={visible}
-            onDismiss={hideModal}
-            contentContainerStyle={{ padding: 20 }}
-          >
-            <Card style={styles.iosCard}>
-              <Card.Content>
-                <Title style={styles.titleCard}>{title}</Title>
-                <Paragraph style={styles.textCard}>{message}</Paragraph>
-              </Card.Content>
-              <Divider />
-              <Card.Actions>
-                <ButtonModal onPress={() => setVisible(false)}>
-                  <Text
-                    style={{
-                      color: colors.error,
-                    }}
-                  >
-                    Fechar
-                  </Text>
-                </ButtonModal>
-              </Card.Actions>
-            </Card>
-          </Modal>
-        </Portal>
-      </Container>
+          </Text>
+        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -222,16 +202,5 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     paddingHorizontal: 8,
-  },
-  iosCard: {
-    backgroundColor: "rgba(230, 230, 230, 0.9)",
-    borderRadius: 15,
-  },
-  titleCard: {
-    textAlign: "center",
-  },
-  textCard: {
-    minHeight: 50,
-    textAlign: "center",
   },
 });

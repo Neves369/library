@@ -9,7 +9,8 @@ interface IBook {
     genero: Array<string>,
     vezesLidas: string,
     descricao: string,
-    data: string
+    data: string,
+    headers: object
 }
 
 export default IBook;

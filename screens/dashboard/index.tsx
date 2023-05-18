@@ -1,74 +1,74 @@
-import React, { useState, useEffect, useContext } from "react";
 import pageFilledIcon from "../../assets/icons/page_filled_icon.png";
+import React, { useState, useEffect, useContext } from "react";
 import bookmarkIcon from "../../assets/icons/mark_icon.png";
 import readIcon from "../../assets/icons/read_icon.png";
 import background from "../../assets/background.png";
-import Books from "../../Books.json";
 import {
   View,
   Text,
-  TouchableOpacity,
   Image,
-  ScrollView,
   FlatList,
-  Modal,
+  ScrollView,
   ImageBackground,
+  TouchableOpacity,
 } from "react-native";
 
 import {
-  Container,
-  Fundo,
-  Header,
-  LineDivider,
-  Menu,
-  ScreenButtom,
-} from "./style";
-
-import {
+  Entypo,
+  Fontisto,
+  Foundation,
+  FontAwesome,
+  FontAwesome5,
   MaterialIcons,
   MaterialCommunityIcons,
-  FontAwesome,
-  Fontisto,
-  Entypo,
-  FontAwesome5,
-  Foundation,
-  AntDesign,
 } from "@expo/vector-icons";
+import Codigo from "../../utils/Codigo";
 import AuthContext from "../../contexts/auth";
+import bookService from "../../service/bookService";
+import LoaderPage from "../../components/Loader/LoaderPage";
+import LineDivider from "../../components/Divider/LineDivider";
+import ImageBlurShadow from "../../components/ImageBlur/ImageBlurShadow";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Dashboard: React.FC = ({ navigation }: any) => {
-
-
-
   const listCategorias = [
     {
       id: 1,
-      titulo: "Best Seller",
-      categoria: "best-seller"
+      titulo: "Ficção",
+      categoria: "ficcao",
     },
     {
       id: 2,
-      titulo: "Clássicos",
-      categoria: "classico"
+      titulo: "Romance",
+      categoria: "romance",
     },
     {
       id: 3,
-      titulo: "Lançamentos",
-      categoria: "lancamento"
+      titulo: "Religioso",
+      categoria: "religioso",
     },
   ];
 
-  const [visible, setVisible] = useState(false);
   const [myBooks, setMyBooks] = useState([]);
-  const [initialBooks, setInitialBooks] = useState(Books.books);
+  const [visible, setVisible] = useState(false);
+  const [initialBooks, setInitialBooks] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [categorias, setCategorias] = useState(listCategorias);
-  const { user, signIn, changeLogando, signOut } = useContext(AuthContext);
+  const { user, signOutClearAll }: any = useContext(AuthContext);
 
   useEffect(() => {
+    getBooks();
+  }, []);
 
-  }, [])
-  
+  const importData = async () => {
+    try {
+      // const keys = await AsyncStorage.multiGet();
+      const result = await AsyncStorage.getItem("ContinueRead");
+      console.log(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   function renderHeader() {
     return (
@@ -85,21 +85,24 @@ const Dashboard: React.FC = ({ navigation }: any) => {
           <View style={{ marginRight: 24 }}>
             <Text
               style={{
-                fontFamily: "Roboto_700Bold",
                 color: "#E7E7E7",
                 fontSize: 16,
                 lineHeight: 22,
+                fontWeight: "700",
               }}
             >
               BEM VINDO
             </Text>
             <Text
               style={{
-                fontFamily: "Roboto_700Bold",
                 color: "white",
                 fontSize: 24,
                 lineHeight: 30,
+                fontWeight: "900",
               }}
+              // onPress={() => {
+              //   importData();
+              // }}
             >
               {user.nome}
             </Text>
@@ -107,16 +110,12 @@ const Dashboard: React.FC = ({ navigation }: any) => {
         </View>
         <TouchableOpacity
           style={{
-            // backgroundColor: 'red',
             height: 80,
             width: 90,
             justifyContent: "center",
             alignItems: "center",
           }}
-          //   onPress={() => {
-          //     setVisible(true);
-          //   }}
-          onPress={() => signOut()}
+          // onPress={() => signOutClearAll()}
         >
           <View
             style={{
@@ -144,7 +143,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
             borderRadius: 12,
           }}
         >
-          {/* Claim */}
+          {/* Category */}
           <TouchableOpacity
             style={{
               flex: 1,
@@ -170,17 +169,9 @@ const Dashboard: React.FC = ({ navigation }: any) => {
           </TouchableOpacity>
 
           {/* Divider */}
-          <LineDivider>
-            <View
-              style={{
-                flex: 1,
-                borderLeftColor: "#64676D",
-                borderLeftWidth: 1,
-              }}
-            ></View>
-          </LineDivider>
+          <LineDivider style={{ padding: 18 }} />
 
-          {/* Get Point */}
+          {/* All books */}
           <TouchableOpacity
             style={{
               flex: 1,
@@ -188,7 +179,9 @@ const Dashboard: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
               paddingTop: 10,
             }}
-            onPress={() => navigation.navigate("ListaLivros")}
+            onPress={() =>
+              navigation.navigate("ListaLivros", { categoria: "ALL" })
+            }
           >
             <Foundation name="page-multiple" size={24} color="white" />
             <View style={{ flex: 1 }}>
@@ -199,17 +192,9 @@ const Dashboard: React.FC = ({ navigation }: any) => {
           </TouchableOpacity>
 
           {/* Divider */}
-          <LineDivider>
-            <View
-              style={{
-                flex: 1,
-                borderLeftColor: "#64676D",
-                borderLeftWidth: 1,
-              }}
-            ></View>
-          </LineDivider>
+          <LineDivider style={{ padding: 18 }} />
 
-          {/* My Card */}
+          {/* Random */}
           <TouchableOpacity
             style={{
               flex: 1,
@@ -217,7 +202,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
               paddingTop: 10,
             }}
-            onPress={() => console.log("My Card")}
+            onPress={() => {}}
           >
             <FontAwesome5 name="dice" size={24} color="white" />
             <View style={{ flex: 1 }}>
@@ -235,6 +220,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
     const renderItem = ({ item, index }: any) => {
       return (
         <TouchableOpacity
+          key={item.id}
           style={{
             flex: 1,
             marginLeft: index == 0 ? 24 : 0,
@@ -247,22 +233,31 @@ const Dashboard: React.FC = ({ navigation }: any) => {
           }
         >
           {/* Book Cover */}
-          <Image
-            source={{ uri: `data:image/gif;base64,${item.capa}` }}
-            resizeMode="cover"
+          <ImageBlurShadow
             style={{
-              width: 180,
-              height: 250,
-              borderRadius: 20,
+              justifyContent: "center",
+              alignSelf: "center",
             }}
+            source={{ uri: `data:image/gif;base64,${item.capa}` }}
+            imageWidth={180}
+            imageHeight={250}
+            imageBorderRadius={22}
+            shadowOffset={42}
+            shadowBlurRadius={12}
+            shadowBackgroundColor={"#000"}
           />
-          <View style={{ marginTop: 10 }} />
         </TouchableOpacity>
       );
     };
 
     return (
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          borderBottomColor: "rgba(100, 103, 109, 0.2)",
+          borderBottomWidth: 1,
+        }}
+      >
         {/* Header */}
         <View
           style={{
@@ -275,7 +270,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
             Meus livros
           </Text>
 
-          <TouchableOpacity onPress={() => console.log("See More")}>
+          <TouchableOpacity onPress={() => {}}>
             <Text
               style={{
                 fontSize: 16,
@@ -295,7 +290,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
           <FlatList
             data={myBooks}
             renderItem={renderItem}
-            keyExtractor={(item) => `${item.id}`}
+            keyExtractor={(item, index) => String(index)}
             horizontal
             showsHorizontalScrollIndicator={false}
           />
@@ -304,7 +299,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
     );
   }
 
-  function renderCategoryHeader() {
+  function renderCategoryHeader(categorias: any) {
     const renderItem = ({ item }: any) => {
       return (
         <TouchableOpacity
@@ -338,7 +333,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
     );
   }
 
-  function renderCategoryData() {
+  function renderCategoryData(initialBooks: any) {
     var books: any = [];
 
     let selectedCategoryBooks = categorias.filter(
@@ -346,17 +341,18 @@ const Dashboard: React.FC = ({ navigation }: any) => {
     );
 
     if (selectedCategoryBooks.length > 0) {
-      initialBooks.forEach(book => {
-        if(book.categoria == selectedCategoryBooks[0].categoria){
-          books.push(book)
-        }
+      initialBooks.forEach((category: any) => {
+        category.books.forEach((book: any) => {
+          if (book.genero == selectedCategoryBooks[0].categoria) {
+            books.push(book);
+          }
+        });
       });
-      
     }
 
-    const renderItem = ({ item }: any) => {
+    const renderItem = ({ item, index }: any) => {
       return (
-        <View style={{ marginVertical: 8 }}>
+        <View style={{ marginVertical: 8 }} key={Codigo.gerar()}>
           <TouchableOpacity
             style={{ flex: 1, flexDirection: "row" }}
             onPress={() =>
@@ -502,7 +498,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
           {/* Bookmark Button */}
           <TouchableOpacity
             style={{ position: "absolute", top: 5, right: 15 }}
-            onPress={() => console.log("Bookmark")}
+            onPress={() => {}}
           >
             <Image
               source={bookmarkIcon}
@@ -523,60 +519,134 @@ const Dashboard: React.FC = ({ navigation }: any) => {
         <FlatList
           data={books}
           renderItem={renderItem}
-          keyExtractor={(item) => `${item.id}`}
+          keyExtractor={(item, index) => String(Codigo.gerar())}
           showsVerticalScrollIndicator={false}
         />
       </View>
     );
   }
 
+  function renderMenu() {
+    return (
+      <View
+        style={{
+          position: "absolute",
+          flexDirection: "row",
+          display: "flex",
+          width: "100%",
+          height: 50,
+          bottom: "0%",
+          borderTopColor: "rgba(100, 103, 109, 0.2)",
+          borderTopWidth: 1,
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: 70,
+            alignItems: "center",
+            marginTop: 12,
+          }}
+        >
+          <MaterialCommunityIcons
+            name="view-dashboard"
+            size={28}
+            color="#E7E7E7"
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: 70,
+            alignItems: "center",
+            marginTop: 12,
+          }}
+        >
+          <FontAwesome name="search" size={28} color="#64676D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: 70,
+            alignItems: "center",
+            marginTop: 12,
+          }}
+        >
+          <Fontisto name="world-o" size={28} color="#64676D" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: 70,
+            alignItems: "center",
+            marginTop: 12,
+          }}
+          onPress={() => {
+            navigation.navigate("Configuracoes");
+          }}
+        >
+          <Entypo
+            name="menu"
+            size={45}
+            style={{ marginTop: -10 }}
+            color="#64676D"
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  async function getBooks() {
+    await bookService
+      .getBooksDashboard({
+        favoritos: user,
+        categorias: listCategorias,
+        token: user.token,
+      })
+      .then((resp) => {
+        setMyBooks(resp[0].data);
+        setInitialBooks(resp[1].data);
+        setVisible(true);
+      })
+      .catch(() => {
+        setVisible(true);
+      });
+  }
+
   return (
-    <Container>
-      <Fundo source={background}>
-        <Header>
+    <View style={{ flex: 1 }}>
+      <ImageBackground style={{ flex: 1 }} source={background}>
+        <View style={{ height: 200, marginTop: 50 }}>
           {renderHeader()}
           {renderButtonSection()}
-        </Header>
+        </View>
 
         <ScrollView style={{ marginTop: 12, marginBottom: 50 }}>
-          {
-            myBooks.length > 0?
-              <View>{renderMyBookSection(myBooks)}</View>
-            :
-              <></>
-          }
+          {myBooks.length > 0 ? (
+            <View>{renderMyBookSection(myBooks)}</View>
+          ) : (
+            <></>
+          )}
           <View style={{ marginTop: 24 }}>
-            <View>{renderCategoryHeader()}</View>
-
-            <View>{renderCategoryData()}</View>
+            {categorias.length > 0 ? (
+              <View>{renderCategoryHeader(categorias)}</View>
+            ) : (
+              <></>
+            )}
+            {initialBooks.length > 0 ? (
+              <View>{renderCategoryData(initialBooks)}</View>
+            ) : (
+              <></>
+            )}
           </View>
         </ScrollView>
-
-        <Menu>
-          <ScreenButtom>
-            <MaterialCommunityIcons
-              name="view-dashboard"
-              size={28}
-              color="#E7E7E7"
-            />
-          </ScreenButtom>
-
-          <ScreenButtom>
-            <FontAwesome name="search" size={28} color="#64676D" />
-          </ScreenButtom>
-
-          <ScreenButtom>
-            <Fontisto name="world-o" size={28} color="#64676D" />
-          </ScreenButtom>
-
-          <ScreenButtom
-            onPress={()=>{navigation.navigate("Configuracoes")}}
-          >
-            <Entypo name="menu" size={28} color="#64676D" />
-          </ScreenButtom>
-        </Menu>
-      </Fundo>
-    </Container>
+        {renderMenu()}
+        {visible ? <></> : <LoaderPage />}
+      </ImageBackground>
+    </View>
   );
 };
 

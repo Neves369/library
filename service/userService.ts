@@ -70,7 +70,7 @@ const atualizarSenha = async (senhas: object) => {
     }
 }
 
-const inativarUser = async (cliente: object) => {
+const inativarUser = async (cliente: IUser) => {
     try {
         return await api.put(`/cliente/inativar/${cliente.id}`, null, {
             headers: {

@@ -1,131 +1,29 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { Entypo, FontAwesome } from "@expo/vector-icons";
 import Background from "../../../assets/background.png";
-import { AntDesign, Entypo, FontAwesome} from "@expo/vector-icons";
+import * as Animatable from "react-native-animatable";
 import LottieView from "lottie-react-native";
+import { Text } from "react-native-paper";
+import React from "react";
 import {
-  TouchableWithoutFeedback,
   View,
   Keyboard,
-  Dimensions,
   StyleSheet,
-  ToastAndroid,
+  Dimensions,
+  ImageBackground,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from "react-native";
-import {
-  Conteudo,
-  Container,
-  InputView,
-  TextFp,
-  TextRegister,
-  ButtonLogin,
-  TextButton,
-  LoginText,
-  TextInput,
-  Fundo,
-  ButtonModal,
-  DividerModal,
-} from "./style";
-import * as Animatable from "react-native-animatable";
-import AuthContext from "../../../contexts/auth";
-// import LoginService from "../../../services/LoginService";
-import {
-  ActivityIndicator,
-  Card,
-  Divider,
-  Modal,
-  Paragraph,
-  Portal,
-  Text,
-  Title,
-  useTheme,
-} from "react-native-paper";
-import { TextInputMask } from "react-native-masked-text";
-// import checkVersion from "../../../utils/CheckStoreVersion";
-// import config from "../../../api/config";
 
 const EntrarCom: React.FC = ({ navigation }: any) => {
-  const { colors } = useTheme();
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
-  const [update, setUpdate] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const { user, signIn, changeLogando } = useContext(AuthContext);
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm();
-
-  const hideModal = () => setVisible(false);
-
-  const handleLogin = async (data: any) => {
-    signIn(null);
-    // setLoading(true)
-    // await LoginService.logar(user)
-    // .then((resp: any)=>{
-    //   ToastAndroid.show(resp.status, ToastAndroid.SHORT)
-    //   if(resp.status == 200){
-    //     setLoading(false)
-    //     if (resp.data.length >= 2){
-    //       navigation.navigate('EscolherSubContrato', resp.data);
-    //     }
-    //     else{
-    //       changeLogando(true),
-    //       signIn(resp.data[0])
-    //     }
-    //   }
-    //   if(Math.trunc(resp.status/ 100)== 4){
-    //     return(
-    //       setLoading(false),
-    //       setTitle("Aviso"),
-    //       setMessage(resp.titulo),
-    //       setVisible(true)
-    //     )
-    //   }
-    //   if(Math.trunc(resp.status / 100) == 5){
-    //     return(
-    //       setLoading(false),
-    //       setTitle("Erro"),
-    //       setMessage(resp.titulo),
-    //       setVisible(true)
-    //     )
-    //   }
-    // })
-    // .catch((resp: any)=>{
-    //   return(
-    //     setLoading(false),
-    //     setTitle("Erro"),
-    //     setMessage(resp.titulo),
-    //     setVisible(true)
-    //   )
-    // })
-  };
-
-  const verifyUpdateStore = async () => {
-    // try {
-    //   const check = await checkVersion();
-    //   if (check.result === "new") {
-    //     setTimeout(() => {
-    //       setUpdate(true);
-    //     }, 2000);
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
-  };
-
-  useEffect(() => {
-    verifyUpdateStore();
-  }, []);
-
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <Container>
+      <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <Fundo resizeMode="stretch" source={Background} />
+          <ImageBackground
+            resizeMode="stretch"
+            source={Background}
+            style={{ flex: 1 }}
+          />
         </View>
         <Animatable.Text
           style={styles.titleText}
@@ -141,49 +39,117 @@ const EntrarCom: React.FC = ({ navigation }: any) => {
           loop
           resizeMode="contain"
         />
-        <Conteudo>
-          <LoginText
+        <View
+          style={{
+            backgroundColor: "#fff",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            padding: 20,
+          }}
+        >
+          <Text
             style={{
-              color: colors.text,
-              
+              margin: 4,
+              color: "#000",
+              fontSize: 16,
+              lineHeight: 22,
+              fontWeight: "700",
             }}
           >
-            Login
-          </LoginText>
-         
-          <ButtonLogin
+            LOGIN
+          </Text>
+
+          <TouchableOpacity
             style={{
               backgroundColor: "#5352A0",
+              flexDirection: "row",
+              padding: 10,
+              borderRadius: 8,
+              marginTop: 10,
             }}
             onPress={() => {
               navigation.navigate("Entrar");
             }}
           >
-            <Entypo name="bookmark" style={{width: 25}} size={24} color="white" />
-            <TextButton>Entrar</TextButton>
-          </ButtonLogin>
+            <Entypo
+              name="bookmark"
+              style={{ width: 25 }}
+              size={24}
+              color="white"
+            />
+            <Text
+              style={{
+                textAlign: "center",
+                width: "85%",
+                color: "#fff",
+                fontSize: 18,
+              }}
+            >
+              Entrar
+            </Text>
+          </TouchableOpacity>
 
-          <ButtonLogin
+          <TouchableOpacity
             style={{
               backgroundColor: "#DB4437",
+              flexDirection: "row",
+              padding: 10,
+              borderRadius: 8,
+              marginTop: 10,
             }}
-            onPress={handleSubmit(handleLogin)}
+            onPress={() => {}}
           >
-              <FontAwesome name="google"  style={{width:25}} size={24} color="white" />
-              <TextButton>Entrar</TextButton>
-          </ButtonLogin>
+            <FontAwesome
+              name="google"
+              style={{ width: 25 }}
+              size={24}
+              color="white"
+            />
+            <Text
+              style={{
+                textAlign: "center",
+                width: "85%",
+                color: "#fff",
+                fontSize: 18,
+              }}
+            >
+              Entrar
+            </Text>
+          </TouchableOpacity>
 
-          <ButtonLogin
+          <TouchableOpacity
             style={{
               backgroundColor: "#3b5998",
+              flexDirection: "row",
+              padding: 10,
+              borderRadius: 8,
+              marginTop: 10,
             }}
-            onPress={handleSubmit(handleLogin)}
+            onPress={() => {}}
           >
-              <FontAwesome name="facebook-f"  style={{width: 25}} size={24} color="white" />
-              <TextButton>Entrar</TextButton>
-          </ButtonLogin>
-          
-          <TextRegister style={{ color: colors.text }}>
+            <FontAwesome
+              name="facebook-f"
+              style={{ width: 25 }}
+              size={24}
+              color="white"
+            />
+            <Text
+              style={{
+                textAlign: "center",
+                width: "85%",
+                color: "#fff",
+                fontSize: 18,
+              }}
+            >
+              Entrar
+            </Text>
+          </TouchableOpacity>
+
+          <Text style={{ marginTop: 10, color: "black" }}>
             Não possui um conta?
             <Text
               style={{ color: "#5352A0" }}
@@ -193,74 +159,9 @@ const EntrarCom: React.FC = ({ navigation }: any) => {
             >
               {" Registrar-se"}
             </Text>
-          </TextRegister>
-        </Conteudo>
-
-        <Portal>
-          <Modal
-            visible={visible}
-            onDismiss={hideModal}
-            contentContainerStyle={{ padding: 20 }}
-          >
-            <Card style={styles.iosCard}>
-              <Card.Content>
-                <Title style={styles.titleCard}>{title}</Title>
-                <Paragraph style={styles.textCard}>{message}</Paragraph>
-              </Card.Content>
-              <DividerModal />
-              <Card.Actions>
-                <ButtonModal onPress={() => setVisible(false)}>
-                  <Text
-                    style={{
-                      color: colors.error,
-                    }}
-                  >
-                    Fechar
-                  </Text>
-                </ButtonModal>
-              </Card.Actions>
-            </Card>
-          </Modal>
-        </Portal>
-
-        <Portal>
-          <Modal
-            visible={update}
-            onDismiss={hideModal}
-            contentContainerStyle={{ padding: 20 }}
-          >
-            <Card style={styles.iosCard}>
-              <Card.Content>
-                <Title style={styles.titleCard}>Atualização Disponível!</Title>
-                <Paragraph style={[styles.textCard, { paddingHorizontal: 50 }]}>
-                  Há uma atualização dísponível, deseja seguir para a loja?
-                </Paragraph>
-              </Card.Content>
-              <DividerModal />
-              <Card.Actions>
-                <ButtonModal onPress={() => setVisible(false)}>
-                  <Text
-                    style={{
-                      color: colors.error,
-                    }}
-                  >
-                    Fechar
-                  </Text>
-                </ButtonModal>
-                <ButtonModal onPress={() => setVisible(false)}>
-                  <Text
-                    style={{
-                      color: colors.primary,
-                    }}
-                  >
-                    Ir para loja
-                  </Text>
-                </ButtonModal>
-              </Card.Actions>
-            </Card>
-          </Modal>
-        </Portal>
-      </Container>
+          </Text>
+        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -282,20 +183,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.44,
     shadowRadius: 10.32,
     elevation: 16,
-  },
-  inputIcon: {
-    paddingHorizontal: 8,
-  },
-  iosCard: {
-    backgroundColor: "rgba(230, 230, 230, 0.9)",
-    elevation: 0,
-    borderRadius: 15,
-  },
-  titleCard: {
-    textAlign: "center",
-  },
-  textCard: {
-    minHeight: 50,
-    textAlign: "center",
   },
 });

@@ -1,58 +1,46 @@
+import { FloatingLabelInput } from "react-native-floating-label-input";
 import React, { useState, useEffect, useContext } from "react";
 import background from "../../assets/background.png";
-import { FloatingLabelInput } from "react-native-floating-label-input";
-import { BoxShadow } from "react-native-shadow";
 import avatar from "../../assets/avatar.png";
 import app from "../../app.json";
 import {
   View,
   Text,
   ScrollView,
-  ActivityIndicator,
   StyleSheet,
+  ActivityIndicator,
+  ImageBackground,
+  TouchableOpacity,
+  Image,
 } from "react-native";
 
 import {
-  AdicionarFoto,
-  BotaoAdicionarFoto,
-  Container,
-  Conteudo,
-  Form,
-  Foto,
-  Fundo,
-  HeaderExtrato,
-  ImageView,
-  Info,
-  InfoExtrato,
-  InfoText,
-  InfoView,
-  InputBox,
-  ScreenButtom,
-  TitleUser,
-} from "./style";
-
-import {
-  MaterialIcons,
   AntDesign,
+  Entypo,
   Feather,
+  Fontisto,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
   Octicons,
 } from "@expo/vector-icons";
 import AuthContext from "../../contexts/auth";
 import { Controller, useForm } from "react-hook-form";
 import { useFocusEffect } from "@react-navigation/native";
+import { Button } from "react-native-paper";
 
 const Configuracoes: React.FC = ({ navigation }: any) => {
   const [show] = useState(false);
-  const { user, signIn, signOut } = useContext(AuthContext);
   const [screen, setScreen] = useState("basicos");
   const [editable, setEditable] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [conectado, setConectado] = useState<boolean | null>();
+  const { user, signIn, signOutClearAll }: any = useContext(AuthContext);
   const {
     control,
-    handleSubmit,
-    setValue,
     reset,
+    setValue,
+    handleSubmit,
     formState: { errors },
   } = useForm();
 
@@ -71,43 +59,21 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
     }, [])
   );
 
-  function renderHeader(profile: any) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          paddingHorizontal: 24,
-          alignItems: "center",
-        }}
-      ></View>
-    );
-  }
-
-  function renderButtonSection() {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", padding: 24 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            height: 70,
-            backgroundColor: "#25282F",
-            borderRadius: 12,
-          }}
-        ></View>
-      </View>
-    );
-  }
-
   const DadosBasicos = () => {
     return (
       <>
-        <Form>
+        <View
+          style={{
+            height: "60%",
+            width: "80%",
+            alignSelf: "center",
+          }}
+        >
           <Controller
             control={control}
             name="Nome"
             render={({ field: { onChange, onBlur, value } }) => (
-              <InputBox>
+              <View style={{ marginTop: 30 }}>
                 <FloatingLabelInput
                   label={"Nome"}
                   maxLength={30}
@@ -136,7 +102,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   value={value}
                   editable={editable}
                 />
-              </InputBox>
+              </View>
             )}
           />
 
@@ -144,7 +110,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
             control={control}
             name="Email"
             render={({ field: { onChange, onBlur, value } }) => (
-              <InputBox>
+              <View style={{ marginTop: 30 }}>
                 <FloatingLabelInput
                   label={"E-mail"}
                   hintTextColor={"white"}
@@ -173,10 +139,23 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   value={value}
                   editable={editable}
                 />
-              </InputBox>
+              </View>
             )}
           />
-        </Form>
+          <Button
+            style={{
+              marginTop: 80,
+              height: 60,
+              justifyContent: "center",
+              backgroundColor: "#F96D41",
+            }}
+            icon="content-save"
+            mode="contained"
+            onPress={() => console.log("Pressed")}
+          >
+            Salvar Dados
+          </Button>
+        </View>
       </>
     );
   };
@@ -184,15 +163,21 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
   const AlterarSenha = () => {
     return (
       <>
-        <Form>
-          <InputBox>
-            <Controller
-              control={control}
-              name="SenhaAntiga"
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
+        <View
+          style={{
+            height: "60%",
+            width: "80%",
+            alignSelf: "center",
+          }}
+        >
+          <Controller
+            control={control}
+            name="SenhaAntiga"
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View style={{ marginTop: 30 }}>
                 <FloatingLabelInput
                   label={"Senha antiga"}
                   hintTextColor={"white"}
@@ -227,19 +212,19 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   onChangeText={(value) => onChange(value)}
                   value={value}
                 />
-              )}
-            />
-            {errors.SenhaAntiga && <Text>Informe a senha atual.</Text>}
-          </InputBox>
+              </View>
+            )}
+          />
+          {errors.SenhaAntiga && <Text>Informe a senha atual.</Text>}
 
-          <InputBox>
-            <Controller
-              control={control}
-              name="NovaSenha"
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
+          <Controller
+            control={control}
+            name="NovaSenha"
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View style={{ marginTop: 30 }}>
                 <FloatingLabelInput
                   label={"Nova senha"}
                   hintTextColor={"white"}
@@ -274,19 +259,19 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   onChangeText={(value) => onChange(value)}
                   value={value}
                 />
-              )}
-            />
-            {errors.NovaSenha && <Text>Informe a nova senha.</Text>}
-          </InputBox>
+              </View>
+            )}
+          />
+          {errors.NovaSenha && <Text>Informe a nova senha.</Text>}
 
-          <InputBox>
-            <Controller
-              control={control}
-              name="ConfirmarNovaSenha"
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
+          <Controller
+            control={control}
+            name="ConfirmarNovaSenha"
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View style={{ marginTop: 30 }}>
                 <FloatingLabelInput
                   label={"Confirmar Nova senha"}
                   hintTextColor={"white"}
@@ -321,13 +306,26 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   onChangeText={(value) => onChange(value)}
                   value={value}
                 />
-              )}
-            />
-            {errors.ConfirmarNovaSenha && (
-              <Text>Confirmação da nova senha necessária.</Text>
+              </View>
             )}
-          </InputBox>
-        </Form>
+          />
+          {errors.ConfirmarNovaSenha && (
+            <Text>Confirmação da nova senha necessária.</Text>
+          )}
+          <Button
+            style={{
+              marginTop: 80,
+              height: 60,
+              justifyContent: "center",
+              backgroundColor: "#F96D41",
+            }}
+            icon="content-save"
+            mode="contained"
+            onPress={() => console.log("Pressed")}
+          >
+            Salvar Dados
+          </Button>
+        </View>
       </>
     );
   };
@@ -335,7 +333,6 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
   const Informacoes = () => {
     return (
       <>
-        <View style={{ marginTop: 100 }} />
         <View
           style={{
             backgroundColor: "rgba(29, 29, 29, 0.9)",
@@ -348,7 +345,15 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
             alignSelf: "center",
           }}
         >
-          <HeaderExtrato>
+          <View
+            style={{
+              height: 50,
+              width: "100%",
+              flexDirection: "row",
+              borderBottomColor: "rgba(100, 103, 109, 0.2)",
+              borderBottomWidth: 1,
+            }}
+          >
             <Octicons
               name="versions"
               style={{
@@ -371,8 +376,15 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
             >
               Versão do App
             </Text>
-          </HeaderExtrato>
-          <InfoExtrato>
+          </View>
+          <View
+            style={{
+              marginTop: -5,
+              height: 50,
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
             <Text
               style={{
                 fontSize: 24,
@@ -384,15 +396,224 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
             >
               {app.expo.version}
             </Text>
-          </InfoExtrato>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: "rgba(29, 29, 29, 0.9)",
+            padding: 5,
+            borderRadius: 10,
+            marginTop: 5,
+            minHeight: 80,
+            width: "85%",
+            display: "flex",
+            alignSelf: "center",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+          onPress={() => {
+            signOutClearAll();
+          }}
+        >
+          <Ionicons
+            name="ios-exit-outline"
+            style={{
+              position: "absolute",
+              marginTop: 5,
+              marginLeft: 10,
+            }}
+            size={30}
+            color="white"
+          />
+
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 16,
+              flex: 2.5,
+              color: "white",
+              paddingTop: 5,
+              textAlign: "center",
+            }}
+          >
+            Encerrar Sessão
+          </Text>
+        </TouchableOpacity>
+
+        <View
+          style={{
+            backgroundColor: "rgba(29, 29, 29, 0.9)",
+            padding: 5,
+            borderRadius: 10,
+            marginTop: 5,
+            minHeight: 80,
+            width: "85%",
+            display: "flex",
+            alignSelf: "center",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <MaterialIcons
+            name="cleaning-services"
+            style={{
+              position: "absolute",
+              marginTop: 5,
+              marginLeft: 10,
+            }}
+            size={30}
+            color="white"
+          />
+
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 16,
+              flex: 2.5,
+              color: "white",
+              paddingTop: 5,
+              textAlign: "center",
+            }}
+          >
+            Limpar Cache
+          </Text>
+        </View>
+
+        <View
+          style={{
+            backgroundColor: "rgba(29, 29, 29, 0.9)",
+            padding: 5,
+            borderRadius: 10,
+            marginTop: 5,
+            minHeight: 80,
+            width: "85%",
+            display: "flex",
+            alignSelf: "center",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Entypo
+            name="trash"
+            style={{
+              position: "absolute",
+              marginTop: 5,
+              marginLeft: 10,
+            }}
+            size={30}
+            color="white"
+          />
+
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 16,
+              flex: 2.5,
+              color: "white",
+              paddingTop: 5,
+              textAlign: "center",
+            }}
+          >
+            Excluir Conta
+          </Text>
         </View>
       </>
     );
   };
 
+  function renderMenu() {
+    return (
+      <View
+        style={{
+          position: "absolute",
+          flexDirection: "row",
+          display: "flex",
+          width: "100%",
+          height: 50,
+          bottom: "0%",
+          borderTopColor: "rgba(100, 103, 109, 0.2)",
+          borderTopWidth: 1,
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: 70,
+            alignItems: "center",
+            marginTop: 12,
+          }}
+          onPress={() => {
+            navigation.navigate("Dashboard");
+          }}
+        >
+          <MaterialCommunityIcons
+            name="view-dashboard"
+            size={28}
+            color="#64676D"
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: 70,
+            alignItems: "center",
+            marginTop: 12,
+          }}
+          onPress={() => {
+            setScreen("basicos");
+          }}
+        >
+          <AntDesign
+            name="user"
+            size={30}
+            color={screen == "basicos" ? "#E7E7E7" : "#64676D"}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: 70,
+            alignItems: "center",
+            marginTop: 12,
+          }}
+          onPress={() => {
+            setScreen("senha");
+          }}
+        >
+          <Feather
+            name="unlock"
+            size={30}
+            color={screen == "senha" ? "#E7E7E7" : "#64676D"}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            height: 70,
+            alignItems: "center",
+            marginTop: 12,
+          }}
+          onPress={() => {
+            setScreen("info");
+          }}
+        >
+          <Feather
+            name="info"
+            size={30}
+            color={screen == "info" ? "#E7E7E7" : "#64676D"}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
-    <Container>
-      <Fundo source={background}>
+    <View style={{ flex: 1 }}>
+      <ImageBackground style={{ flex: 1 }} source={background}>
         <ScrollView>
           <View
             style={{
@@ -403,33 +624,71 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
             }}
           >
-            <ImageView>
-              <Foto source={avatar} />
-              {/* <AdicionarFoto>
-                <BotaoAdicionarFoto>
+            <View style={{ alignItems: "center" }}>
+              <Image
+                source={avatar}
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 60,
+                  borderWidth: 3,
+                  backgroundColor: "grey",
+                  borderColor: "rgba(100, 100, 100, 0.5)",
+                }}
+              />
+              <View
+                style={{
+                  width: 139,
+                  height: 30,
+                  left: -25,
+                  bottom: 10,
+                  position: "absolute",
+                }}
+              >
+                <TouchableOpacity
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    bottom: 0,
+                    alignSelf: "flex-end",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "#90BE6D",
+                  }}
+                >
                   <MaterialIcons name="add-a-photo" size={15} color="white" />
-                </BotaoAdicionarFoto>
-              </AdicionarFoto> */}
-            </ImageView>
+                </TouchableOpacity>
+              </View>
+            </View>
 
-            <Info>
+            <View style={{ width: "50%", marginTop: 20 }}>
               {isFocused ? (
                 <>
-                  <TitleUser>
+                  <Text
+                    style={{
+                      width: "100%",
+                      fontSize: 26,
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      color: "white",
+                      height: 35,
+                    }}
+                  >
                     {`${user?.nome.split(" ")[0]}` +
                       " " +
                       `${
                         user?.nome.split(" ")[1] ? user?.nome.split(" ")[1] : ""
                       }`}
-                  </TitleUser>
+                  </Text>
                 </>
               ) : (
                 <></>
               )}
-            </Info>
+            </View>
           </View>
 
-          <Conteudo>
+          <View style={{ height: "80%", width: "100%", paddingBottom: 100 }}>
             {isFocused ? (
               conectado ? (
                 screen == "basicos" ? (
@@ -442,10 +701,23 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   <></>
                 )
               ) : (
-                <InfoView>
+                <View
+                  style={{
+                    display: "flex",
+                    backgroundColor: "white",
+                    marginTop: 200,
+                    width: "100%",
+                    height: 100,
+                    alignSelf: "center",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <Feather name="wifi-off" size={100} color="white" />
-                  <InfoText>Sem conexão.</InfoText>
-                </InfoView>
+                  <Text style={{ color: "white", marginTop: 20, fontSize: 16 }}>
+                    Sem conexão.
+                  </Text>
+                </View>
               )
             ) : (
               <ActivityIndicator
@@ -454,120 +726,12 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                 style={{ alignSelf: "center", marginTop: 150 }}
               />
             )}
-          </Conteudo>
+          </View>
         </ScrollView>
-
-        <View
-          style={{
-            position: "absolute",
-            flexDirection: "row",
-            display: "flex",
-            width: "100%",
-            height: 80,
-            bottom: "0%",
-            backgroundColor: "#000000",
-          }}
-        >
-          <ScreenButtom
-            onPress={() => {
-              navigation.navigate("Dashboard");
-              setEditable(false);
-            }}
-          >
-            <AntDesign name="home" size={30} color={"#E7E7E7"} />
-            <Text
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              style={{
-                color: "#E7E7E7",
-              }}
-            >
-              Home
-            </Text>
-          </ScreenButtom>
-
-          <ScreenButtom
-            onPress={() => {
-              setScreen("basicos");
-              setEditable(false);
-            }}
-          >
-            <AntDesign
-              name="user"
-              size={30}
-              color={screen == "basicos" ? "#BA8C63" : "#E7E7E7"}
-            />
-            <Text
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              style={{
-                color: screen == "basicos" ? "#BA8C63" : "#E7E7E7",
-              }}
-            >
-              Perfil
-            </Text>
-          </ScreenButtom>
-
-          <ScreenButtom
-            onPress={() => {
-              setScreen("senha");
-              setEditable(false);
-            }}
-          >
-            <Feather
-              name="unlock"
-              size={30}
-              color={screen == "senha" ? "#BA8C63" : "#E7E7E7"}
-            />
-            <Text
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              style={{
-                color: screen == "senha" ? "#BA8C63" : "#E7E7E7",
-              }}
-            >
-              Alterar senha
-            </Text>
-          </ScreenButtom>
-
-          <ScreenButtom
-            onPress={() => {
-              setScreen("info");
-              setEditable(false);
-            }}
-          >
-            <Feather
-              name="info"
-              size={30}
-              color={screen == "info" ? "#BA8C63" : "#E7E7E7"}
-            />
-            <Text
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              style={{
-                color: screen == "info" ? "#BA8C63" : "#E7E7E7",
-              }}
-            >
-              Versão
-            </Text>
-          </ScreenButtom>
-        </View>
-      </Fundo>
-    </Container>
+        {renderMenu()}
+      </ImageBackground>
+    </View>
   );
 };
 
 export default Configuracoes;
-
-const styles = StyleSheet.create({
-  shadowBox: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-});

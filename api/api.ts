@@ -1,8 +1,8 @@
 import axios from "axios";
+import config from "./config";
 
-const apiIPDEV = "191.252.193.56:9444"; //7
-const apiIPPRODUCAO = "191.252.103.92:9443"; //5
-const apiURL = `http://192.168.0.105:3000`;
+console.log(config.IP_DEV)
+const apiURL = `http://${config.IP_DEV}`;
 
 const api = axios.create({
   baseURL: `${apiURL}`,
@@ -11,5 +11,7 @@ const api = axios.create({
     "Content-Type": "application/json;charset=UTF-8",
   },
 });
+
+// api.defaults.timeout = 3000;
 
 export default api;
