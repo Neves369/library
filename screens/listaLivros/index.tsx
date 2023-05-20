@@ -27,11 +27,14 @@ import AuthContext from "../../contexts/auth";
 import bookService from "../../service/bookService";
 import LoaderPage from "../../components/Loader/LoaderPage";
 import LineDivider from "../../components/Divider/LineDivider";
+import ArrayContains from "../../utils/ArrayContains";
+import userService from "../../service/userService";
+import Category from "../../components/Category";
 
 const ListaLivros: React.FC = ({ route, navigation }: any) => {
   const [myBooks, setMyBooks] = useState([]);
   const [visible, setVisible] = useState(false);
-  const { user }: any = useContext(AuthContext);
+  const { user, signIn, showMessage }: any = useContext(AuthContext);
 
   useEffect(() => {
     getBooks();
@@ -48,6 +51,27 @@ const ListaLivros: React.FC = ({ route, navigation }: any) => {
         setVisible(true);
       });
   };
+
+  async function saveInFavorites(bookId: string) {
+    if (ArrayContains.string(user.favoritos, bookId)) {
+      user.favoritos = user.favoritos.filter((item: any) => item != bookId);
+    } else {
+      user.favoritos.push(bookId);
+    }
+
+    await userService
+      .atualizarUser(user)
+      .then((resp: any) => {
+        if (resp.status == 200) {
+          signIn(resp.data);
+        } else {
+          showMessage(resp.Erro);
+        }
+      })
+      .catch((resp: any) => {
+        showMessage(resp);
+      });
+  }
 
   function renderHeader() {
     return (
@@ -290,63 +314,7 @@ const ListaLivros: React.FC = ({ route, navigation }: any) => {
 
               {/* Genre */}
               <View style={{ flexDirection: "row", marginTop: 8 }}>
-                {item.genero.includes("ficcao") && (
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      padding: 8,
-                      marginRight: 8,
-                      backgroundColor: "darkGreen",
-                      height: 40,
-                      borderRadius: 12,
-                    }}
-                  >
-                    <Text
-                      style={{ fontSize: 16, lineHeight: 22, color: "#424BAF" }}
-                    >
-                      Ficção
-                    </Text>
-                  </View>
-                )}
-                {item.genero.includes("religioso") && (
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      padding: 8,
-                      marginRight: 8,
-                      backgroundColor: "darkRed",
-                      height: 40,
-                      borderRadius: 12,
-                    }}
-                  >
-                    <Text
-                      style={{ fontSize: 16, lineHeight: 22, color: "#424BAF" }}
-                    >
-                      Religioso
-                    </Text>
-                  </View>
-                )}
-                {item.genero.includes("Drama") && (
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      padding: 8,
-                      marginRight: 8,
-                      backgroundColor: "darkBlue",
-                      height: 40,
-                      borderRadius: 12,
-                    }}
-                  >
-                    <Text
-                      style={{ fontSize: 16, lineHeight: 22, color: "#424BAF" }}
-                    >
-                      Drama
-                    </Text>
-                  </View>
-                )}
+                {Category(item)}
               </View>
             </View>
           </TouchableOpacity>
@@ -354,17 +322,15 @@ const ListaLivros: React.FC = ({ route, navigation }: any) => {
           {/* Bookmark Button */}
           <TouchableOpacity
             style={{ position: "absolute", top: 5, right: 15 }}
-            onPress={() => {}}
+            onPress={() => {
+              saveInFavorites(item._id);
+            }}
           >
-            <Image
-              source={bookmarkIcon}
-              resizeMode="contain"
-              style={{
-                width: 25,
-                height: 25,
-                tintColor: "#64676D",
-              }}
-            />
+            {ArrayContains.string(user.favoritos, item._id) ? (
+              <FontAwesome name="bookmark" size={30} color="white" />
+            ) : (
+              <FontAwesome name="bookmark-o" size={30} color="#64676D" />
+            )}
           </TouchableOpacity>
         </View>
       );

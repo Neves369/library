@@ -1,26 +1,29 @@
+import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect, useContext } from "react";
-import bookmarkIcon from "../../assets/icons/mark_icon.png";
-import { AntDesign, Feather } from "@expo/vector-icons";
 import ReadPage from "../../components/Read/ReadPage";
 import bookService from "../../service/bookService";
 import {
   View,
   Text,
+  Image,
+  Animated,
+  ScrollView,
   ImageBackground,
   TouchableOpacity,
-  Image,
-  ScrollView,
-  Animated,
 } from "react-native";
 import LineDivider from "../../components/Divider/LineDivider";
+import ArrayContains from "../../utils/ArrayContains";
+import userService from "../../service/userService";
 import AuthContext from "../../contexts/auth";
+import { Menu } from "react-native-paper";
 
 const Detalhes = ({ route, navigation }: any) => {
   const indicator = new Animated.Value(0);
-  const { user }: any = useContext(AuthContext);
   const [showBook, setShowBook] = useState(false);
+  const [visible, setVisible] = React.useState(false);
   const [book, setBook] = useState<any>(route.params.book);
+  const { user, signIn, showMessage }: any = useContext(AuthContext);
   const [scrollViewWholeHeight, setScrollViewWholeHeight] = useState(1);
   const [scrollViewVisibleHeight, setScrollViewVisibleHeight] = useState(0);
 
@@ -39,6 +42,27 @@ const Detalhes = ({ route, navigation }: any) => {
     if (headers.data) {
       book.headers = headers.data;
     }
+  }
+
+  async function saveInFavorites(bookId: string) {
+    if (ArrayContains.string(user.favoritos, bookId)) {
+      user.favoritos = user.favoritos.filter((item: any) => item != bookId);
+    } else {
+      user.favoritos.push(bookId);
+    }
+
+    await userService
+      .atualizarUser(user)
+      .then((resp: any) => {
+        if (resp.status == 200) {
+          signIn(resp.data);
+        } else {
+          showMessage(resp.Erro);
+        }
+      })
+      .catch((resp: any) => {
+        showMessage(resp);
+      });
   }
 
   function renderBookInfoSection() {
@@ -92,9 +116,39 @@ const Detalhes = ({ route, navigation }: any) => {
             </Text>
           </View>
 
-          <TouchableOpacity onPress={() => {}}>
-            <Feather name="more-horizontal" size={24} color="white" />
-          </TouchableOpacity>
+          <Menu
+            visible={visible}
+            onDismiss={() => {
+              setVisible(false);
+            }}
+            anchor={
+              <TouchableOpacity
+                onPress={() => {
+                  setVisible(true);
+                }}
+              >
+                <Feather name="more-horizontal" size={24} color="white" />
+              </TouchableOpacity>
+            }
+          >
+            <Menu.Item
+              onPress={() => {}}
+              leadingIcon="star"
+              title="Avaliar livro"
+            />
+            <Menu.Item
+              onPress={() => {}}
+              leadingIcon="message"
+              title="comentários"
+            />
+            <Menu.Item
+              onPress={() => {
+                removeProgress();
+              }}
+              leadingIcon="close"
+              title="Apagar progresso"
+            />
+          </Menu>
         </View>
 
         {/* Book Cover */}
@@ -261,17 +315,15 @@ const Detalhes = ({ route, navigation }: any) => {
             alignItems: "center",
             justifyContent: "center",
           }}
-          onPress={() => {}}
+          onPress={() => {
+            saveInFavorites(book._id);
+          }}
         >
-          <Image
-            source={bookmarkIcon}
-            resizeMode="contain"
-            style={{
-              width: 25,
-              height: 25,
-              tintColor: "#7D7E84",
-            }}
-          />
+          {ArrayContains.string(user.favoritos, book._id) ? (
+            <FontAwesome name="bookmark" size={30} color="white" />
+          ) : (
+            <FontAwesome name="bookmark-o" size={30} color="#64676D" />
+          )}
         </TouchableOpacity>
 
         {/* Start Reading */}
@@ -295,6 +347,17 @@ const Detalhes = ({ route, navigation }: any) => {
         </TouchableOpacity>
       </View>
     );
+  }
+
+  async function removeProgress() {
+    const keys = [
+      book._id,
+      `${book._id}font`,
+      `${book._id}fontFamily`,
+      `${book._id}theme`,
+      `OfflineEpub${book.nome}`,
+    ];
+    await AsyncStorage.multiRemove(keys);
   }
 
   if (book) {

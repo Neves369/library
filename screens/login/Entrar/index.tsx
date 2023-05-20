@@ -2,7 +2,7 @@ import Background from "../../../assets/background.png";
 import userService from "../../../service/userService";
 import { useForm, Controller } from "react-hook-form";
 import * as Animatable from "react-native-animatable";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import AuthContext from "../../../contexts/auth";
 import LottieView from "lottie-react-native";
 import { Entypo } from "@expo/vector-icons";
@@ -15,6 +15,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Animated,
 } from "react-native";
 
 import { Text, useTheme, ActivityIndicator } from "react-native-paper";
@@ -22,7 +23,8 @@ import { Text, useTheme, ActivityIndicator } from "react-native-paper";
 const Entrar: React.FC = ({ navigation }: any) => {
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
-  const { signIn }: any = useContext(AuthContext);
+  const [keyboardShow, setKeyboardShow] = useState(false);
+  const { signIn, showMessage }: any = useContext(AuthContext);
   const {
     control,
     handleSubmit,
@@ -31,24 +33,40 @@ const Entrar: React.FC = ({ navigation }: any) => {
 
   const handleLogin = async (data: any) => {
     setLoading(true);
+
     await userService
       .login(data)
       .then((resp: any) => {
         if (resp.status == 200) {
-          setLoading(false);
           signIn(resp.data);
-        }
-        if (Math.trunc(resp.status / 100) == 4) {
-          return setLoading(false);
-        }
-        if (Math.trunc(resp.status / 100) == 5) {
-          return setLoading(false);
+        } else {
+          console.log(resp);
+          showMessage(resp.Erro);
         }
       })
       .catch((resp: any) => {
-        return setLoading(false);
+        showMessage(resp);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
+
+  // mostrar teclado
+  function KeyboardDidShow() {
+    setKeyboardShow(true);
+  }
+
+  // esconder teclado
+  function KeyboardDidHide() {
+    setKeyboardShow(false);
+  }
+
+  // Ouve os eventos de show e hide do teclado
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidShow", KeyboardDidShow);
+    Keyboard.addListener("keyboardDidHide", KeyboardDidHide);
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -72,6 +90,7 @@ const Entrar: React.FC = ({ navigation }: any) => {
           source={require("../../../assets/images/35235-reading.json")}
           autoPlay
           loop
+          style={{ display: !keyboardShow ? "flex" : "none" }}
           resizeMode="contain"
         />
         <View
@@ -206,13 +225,13 @@ const Entrar: React.FC = ({ navigation }: any) => {
           </Text>
           <TouchableOpacity
             style={{
-              backgroundColor: "#5352A0",
+              backgroundColor: !loading ? "#5352A0" : "grey",
               flexDirection: "row",
               padding: 10,
               borderRadius: 8,
               marginTop: 10,
             }}
-            onPress={handleSubmit(handleLogin)}
+            onPress={handleSubmit(!loading ? handleLogin : () => {})}
           >
             {loading ? (
               <ActivityIndicator animating={true} color="white" />

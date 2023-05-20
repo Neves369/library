@@ -5,21 +5,22 @@ import { Entypo } from "@expo/vector-icons";
 import {
   View,
   Keyboard,
+  TextInput,
   Dimensions,
   StyleSheet,
   ImageBackground,
-  TouchableWithoutFeedback,
-  TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 
-import { Text, useTheme } from "react-native-paper";
+import { Text } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 
 const EsqueciASenha: React.FC = ({ navigation }: any) => {
-  const { colors } = useTheme();
   const [email, setEmail] = useState("");
   const [enviado, setEnviado] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [timerCount, setTimer] = useState<number>(0);
 
   useEffect(() => {
@@ -33,10 +34,13 @@ const EsqueciASenha: React.FC = ({ navigation }: any) => {
         }
       }, 1000);
       return () => clearInterval(interval);
+    } else {
+      setLoading(false);
     }
   }, [timerCount]);
 
   const Enviar = async () => {
+    setLoading(true);
     if (timerCount == 0) {
       setTimer(90);
     }
@@ -146,11 +150,21 @@ const EsqueciASenha: React.FC = ({ navigation }: any) => {
               marginTop: 10,
             }}
             onPress={() => {
-              if (email) {
+              if (email && !loading) {
                 Enviar();
               }
             }}
           >
+            {loading ? (
+              <ActivityIndicator animating={true} color="white" />
+            ) : (
+              <Entypo
+                name="bookmark"
+                style={{ width: 25 }}
+                size={24}
+                color="white"
+              />
+            )}
             <Text
               style={{
                 textAlign: "center",

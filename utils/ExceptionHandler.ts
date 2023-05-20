@@ -1,8 +1,8 @@
 const exceptionHandler = ( error: any ) => {
 
 
-    if(error.status != 200){
-     return error;        
+    if(error.response.status != 200){
+     return error.response.data;        
     }
 
 }

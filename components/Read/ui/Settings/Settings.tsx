@@ -2,6 +2,7 @@ import {
   AntDesign,
   Ionicons,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import BottomSheet, {
   BottomSheetModalProvider,
@@ -13,7 +14,6 @@ import I18n from "i18n-js";
 import React, { memo, useState } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Toast from "react-native-toast-message";
 import ChoseColor from "./components/ChoseColor";
 import ChoseFont from "./components/ChoseFont";
 import SearchSettings from "./components/searchSettings";
@@ -24,8 +24,7 @@ const Settings = (props: IReadSettings) => {
   const { isConnected } = useNetInfo();
   const [term, setTerm] = React.useState("");
   const [searchState, setSearchState] = useState(false);
-  // const { navigate } = useTypedNavigation()
-  // const [addChat] = useAddBookToChatMutation()
+
   return (
     <>
       <GestureHandlerRootView
@@ -65,6 +64,23 @@ const Settings = (props: IReadSettings) => {
                   marginBottom: 24,
                 }}
               >
+                <TouchableOpacity
+                  style={{
+                    backgroundColor:
+                      props.theme.body.background === "#121212"
+                        ? "gray"
+                        : "#121212",
+                  }}
+                  onPress={() => {
+                    props.setShow(false);
+                  }}
+                >
+                  <MaterialIcons
+                    name="keyboard-return"
+                    size={24}
+                    color="white"
+                  />
+                </TouchableOpacity>
                 {isConnected ? (
                   <TouchableOpacity
                     style={{

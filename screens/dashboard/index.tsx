@@ -1,6 +1,5 @@
 import pageFilledIcon from "../../assets/icons/page_filled_icon.png";
-import React, { useState, useEffect, useContext } from "react";
-import bookmarkIcon from "../../assets/icons/mark_icon.png";
+import React, { useState, useContext, useCallback } from "react";
 import readIcon from "../../assets/icons/read_icon.png";
 import background from "../../assets/background.png";
 import {
@@ -25,10 +24,13 @@ import {
 import Codigo from "../../utils/Codigo";
 import AuthContext from "../../contexts/auth";
 import bookService from "../../service/bookService";
+import userService from "../../service/userService";
+import ArrayContains from "../../utils/ArrayContains";
+import { useFocusEffect } from "@react-navigation/native";
 import LoaderPage from "../../components/Loader/LoaderPage";
 import LineDivider from "../../components/Divider/LineDivider";
 import ImageBlurShadow from "../../components/ImageBlur/ImageBlurShadow";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import Category from "../../components/Category";
 
 const Dashboard: React.FC = ({ navigation }: any) => {
   const listCategorias = [
@@ -54,21 +56,13 @@ const Dashboard: React.FC = ({ navigation }: any) => {
   const [initialBooks, setInitialBooks] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [categorias, setCategorias] = useState(listCategorias);
-  const { user, signOutClearAll }: any = useContext(AuthContext);
+  const { user, signIn, showMessage }: any = useContext(AuthContext);
 
-  useEffect(() => {
-    getBooks();
-  }, []);
-
-  const importData = async () => {
-    try {
-      // const keys = await AsyncStorage.multiGet();
-      const result = await AsyncStorage.getItem("ContinueRead");
-      console.log(result);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      getBooks();
+    }, [])
+  );
 
   function renderHeader() {
     return (
@@ -100,9 +94,6 @@ const Dashboard: React.FC = ({ navigation }: any) => {
                 lineHeight: 30,
                 fontWeight: "900",
               }}
-              // onPress={() => {
-              //   importData();
-              // }}
             >
               {user.nome}
             </Text>
@@ -434,63 +425,7 @@ const Dashboard: React.FC = ({ navigation }: any) => {
 
               {/* Genre */}
               <View style={{ flexDirection: "row", marginTop: 8 }}>
-                {item.genero.includes("ficcao") && (
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      padding: 8,
-                      marginRight: 8,
-                      backgroundColor: "darkGreen",
-                      height: 40,
-                      borderRadius: 12,
-                    }}
-                  >
-                    <Text
-                      style={{ fontSize: 16, lineHeight: 22, color: "#424BAF" }}
-                    >
-                      Ficção
-                    </Text>
-                  </View>
-                )}
-                {item.genero.includes("religioso") && (
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      padding: 8,
-                      marginRight: 8,
-                      backgroundColor: "darkRed",
-                      height: 40,
-                      borderRadius: 12,
-                    }}
-                  >
-                    <Text
-                      style={{ fontSize: 16, lineHeight: 22, color: "#424BAF" }}
-                    >
-                      Religioso
-                    </Text>
-                  </View>
-                )}
-                {item.genero.includes("Drama") && (
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      padding: 8,
-                      marginRight: 8,
-                      backgroundColor: "darkBlue",
-                      height: 40,
-                      borderRadius: 12,
-                    }}
-                  >
-                    <Text
-                      style={{ fontSize: 16, lineHeight: 22, color: "#424BAF" }}
-                    >
-                      Drama
-                    </Text>
-                  </View>
-                )}
+                {Category(item)}
               </View>
             </View>
           </TouchableOpacity>
@@ -498,17 +433,15 @@ const Dashboard: React.FC = ({ navigation }: any) => {
           {/* Bookmark Button */}
           <TouchableOpacity
             style={{ position: "absolute", top: 5, right: 15 }}
-            onPress={() => {}}
+            onPress={() => {
+              saveInFavorites(item._id);
+            }}
           >
-            <Image
-              source={bookmarkIcon}
-              resizeMode="contain"
-              style={{
-                width: 25,
-                height: 25,
-                tintColor: "#64676D",
-              }}
-            />
+            {ArrayContains.string(user.favoritos, item._id) ? (
+              <FontAwesome name="bookmark" size={30} color="white" />
+            ) : (
+              <FontAwesome name="bookmark-o" size={30} color="#64676D" />
+            )}
           </TouchableOpacity>
         </View>
       );
@@ -613,6 +546,28 @@ const Dashboard: React.FC = ({ navigation }: any) => {
       })
       .catch(() => {
         setVisible(true);
+      });
+  }
+
+  async function saveInFavorites(bookId: string) {
+    if (ArrayContains.string(user.favoritos, bookId)) {
+      user.favoritos = user.favoritos.filter((item: any) => item != bookId);
+    } else {
+      user.favoritos.push(bookId);
+    }
+
+    await userService
+      .atualizarUser(user)
+      .then((resp: any) => {
+        if (resp.status == 200) {
+          signIn(resp.data);
+          getBooks();
+        } else {
+          showMessage(resp.Erro);
+        }
+      })
+      .catch((resp: any) => {
+        showMessage(resp);
       });
   }
 

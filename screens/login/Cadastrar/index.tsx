@@ -4,9 +4,10 @@ import { TextInputMask } from "react-native-masked-text";
 import Background from "../../../assets/background.png";
 import { useForm, Controller } from "react-hook-form";
 import * as Animatable from "react-native-animatable";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import AuthContext from "../../../contexts/auth";
 import LottieView from "lottie-react-native";
+import Moment from "moment";
 import {
   View,
   Keyboard,
@@ -20,10 +21,11 @@ import {
 
 const Cadastrar: React.FC = ({ navigation }: any) => {
   const { colors } = useTheme();
-  const [userInfo, setUserInfo] = useState();
   const [loading, setLoading] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>();
   const { signIn }: any = useContext(AuthContext);
   const [screen, setScreen] = useState("básicos");
+  const [keyboardShow, setKeyboardShow] = useState(false);
   const {
     reset,
     control,
@@ -38,12 +40,17 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
   };
 
   const handleCadastrar = async (data: any) => {
-    // let user = {
-    //   cpf: ncpf,
-    //   dataNascimento: Moment(userInfo?.DataNascimento, 'DD/MM/YYYY').format('YYYY-MM-DD'),
-    //   senha1: data.Senha,
-    //   senha2: data.Confirmar_Senha
-    // }
+    setLoading(true);
+    let user = {
+      email: userInfo?.Email,
+      dataNascimento: Moment(userInfo?.DataNascimento, "DD/MM/YYYY").format(
+        "YYYY-MM-DD"
+      ),
+      senha1: data.Senha,
+      senha2: data.Confirmar_Senha,
+    };
+    console.log(user);
+    setLoading(false);
     // await LoginService.primeiroAcesso(user)
     // .then((resp: any)=>{
     //   if(resp.status == 200){
@@ -307,10 +314,11 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
                   fontSize: 16,
                   color: "#333",
                 }}
+                secureTextEntry={true}
                 placeholder="Senha"
                 autoCapitalize="none"
-                keyboardType="email-address"
-                textContentType="emailAddress"
+                keyboardType="visible-password"
+                textContentType="password"
                 maxLength={12}
                 onBlur={onBlur}
                 onChangeText={(value: any) => onChange(value)}
@@ -355,6 +363,7 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
                   fontSize: 16,
                   color: "#333",
                 }}
+                secureTextEntry={true}
                 placeholder="Confirmar senha"
                 autoCapitalize="none"
                 keyboardType="email-address"
@@ -375,34 +384,34 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
 
         <TouchableOpacity
           style={{
-            backgroundColor: "#5352A0",
+            backgroundColor: !loading ? "#5352A0" : "grey",
             flexDirection: "row",
             padding: 10,
             borderRadius: 8,
             marginTop: 10,
           }}
-          onPress={handleSubmit(handleCadastrar)}
+          onPress={handleSubmit(!loading ? handleCadastrar : () => {})}
         >
-          <Entypo
-            name="bookmark"
-            style={{ width: 25 }}
-            size={24}
-            color="white"
-          />
           {loading ? (
             <ActivityIndicator animating={true} color={"white"} />
           ) : (
-            <Text
-              style={{
-                textAlign: "center",
-                width: "85%",
-                color: "#fff",
-                fontSize: 18,
-              }}
-            >
-              Cadastrar
-            </Text>
+            <Entypo
+              name="bookmark"
+              style={{ width: 25 }}
+              size={24}
+              color="white"
+            />
           )}
+          <Text
+            style={{
+              textAlign: "center",
+              width: "85%",
+              color: "#fff",
+              fontSize: 18,
+            }}
+          >
+            Cadastrar
+          </Text>
         </TouchableOpacity>
 
         <Text style={{ marginTop: 10 }}>
@@ -421,6 +430,22 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
       </View>
     );
   }
+
+  // mostrar teclado
+  function KeyboardDidShow() {
+    setKeyboardShow(true);
+  }
+
+  // esconder teclado
+  function KeyboardDidHide() {
+    setKeyboardShow(false);
+  }
+
+  // Ouve os eventos de show e hide do teclado
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidShow", KeyboardDidShow);
+    Keyboard.addListener("keyboardDidHide", KeyboardDidHide);
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -444,7 +469,8 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
           source={require("../../../assets/images/35235-reading.json")}
           autoPlay
           loop
-          resizeMode="contain"
+          // style={{ display: !keyboardShow ? "flex" : "none" }}
+          resizeMode="cover"
         />
         {screen == "básicos" ? renderFirst() : renderSecond()}
       </View>

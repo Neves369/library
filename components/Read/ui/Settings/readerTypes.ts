@@ -4,6 +4,7 @@ import React from 'react'
 export interface IReadSettings {
 	isVisible: boolean
 	setIsVisible: React.Dispatch<React.SetStateAction<boolean>>
+	setShow: React.Dispatch<React.SetStateAction<boolean>>
 	theme: Theme
 	currentLocation: Location | null
 	changeFontSize: (size: string) => void

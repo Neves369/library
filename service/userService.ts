@@ -12,15 +12,14 @@ const login = async (user: IUser) => {
             }
         })
        
-    } catch (error) {
-        console.log(error)
+    } catch (error: any) {
         return exceptionHandler(error);
     }
 }
 
-const salvarUser = async (cliente: object) => {
+const salvarUser = async (user: IUser) => {
     try {
-        return await api.post(`/cliente/salvar`, cliente, {
+        return await api.post(`/cliente/salvar`, user, {
             headers: {
                 Token: "77f04b5e-60af-40ac-9063-6bbebdfac8e8"
             }
@@ -31,9 +30,9 @@ const salvarUser = async (cliente: object) => {
     }
 }
 
-const getUser = async (clienteId: string) => {
+const getUser = async (userId: string) => {
     try {
-        return await api.get(`/cliente/id/${clienteId}`, {
+        return await api.get(`/cliente/id/${userId}`, {
             headers: {
                 Token: "77f04b5e-60af-40ac-9063-6bbebdfac8e8"
             }
@@ -44,11 +43,13 @@ const getUser = async (clienteId: string) => {
     }
 }
 
-const atualizarUser = async (cliente: object) => {
+const atualizarUser = async (user: IUser) => {
     try {
-        return await api.put(`/cliente/atualizar`, cliente, {
+        return await api.put(`/user/${user.id}`, user, {
             headers: {
-                Token: "77f04b5e-60af-40ac-9063-6bbebdfac8e8"
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "application/json;charset=UTF-8",
+                permitir: `Bearer ${user.token}`,
             }
         })
        
@@ -70,9 +71,9 @@ const atualizarSenha = async (senhas: object) => {
     }
 }
 
-const inativarUser = async (cliente: IUser) => {
+const inativarUser = async (user: IUser) => {
     try {
-        return await api.put(`/cliente/inativar/${cliente.id}`, null, {
+        return await api.put(`/cliente/inativar/${user.id}`, null, {
             headers: {
                 Token: "77f04b5e-60af-40ac-9063-6bbebdfac8e8"
             }

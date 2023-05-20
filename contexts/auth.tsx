@@ -4,19 +4,24 @@ import IUser from "../models/IUser";
 
 interface AuthContextData {
   signed: boolean;
+  error: string;
+  showError: boolean;
   user: IUser | undefined;
   signIn(usuario: IUser): Promise<void>;
   signOut(): void;
   signOutClearUser(): void;
   signOutClearAll(): void;
+  showMessage(message: string): void;
+  hideMessage(): void;
 }
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
 export const AuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState<IUser | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [showError, setshowError] = useState(false);
   const [signedUser, setSignedUser] = useState(false);
+  const [user, setUser] = useState<IUser | undefined>(undefined);
 
   useEffect(() => {
     async function loadStorageData() {
@@ -24,7 +29,6 @@ export const AuthProvider = ({ children }: any) => {
 
       if (storageUser) {
         setUser(JSON.parse(storageUser));
-        setLoading(false);
         setSignedUser(true);
       }
     }
@@ -59,15 +63,34 @@ export const AuthProvider = ({ children }: any) => {
     });
   }
 
+  function showMessage(message: string) {
+    setError(message);
+    setshowError(true);
+
+    setTimeout(() => {
+      setError("");
+      setshowError(false);
+    }, 5000);
+  }
+
+  function hideMessage() {
+    setError("");
+    setshowError(false);
+  }
+
   return (
     <AuthContext.Provider
       value={{
         signed: signedUser,
+        showError,
+        error,
         user,
         signIn,
         signOut,
         signOutClearAll,
         signOutClearUser,
+        showMessage,
+        hideMessage,
       }}
     >
       {children}

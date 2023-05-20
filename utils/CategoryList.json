@@ -1,0 +1,84 @@
+{
+    "categorias": [
+        {
+            "id": 1,
+            "titulo": "Best Seller",
+            "categoria": "best-seller"
+          },
+          {
+            "id": 2,
+            "titulo": "Clássicos",
+            "categoria": "classico"
+          },
+          {
+            "id": 3,
+            "titulo": "Lançamentos",
+            "categoria": "lancamento"
+          },
+          {
+            "id": 4,
+            "titulo": "Autoajuda",
+            "categoria": "autoajuda"
+          },
+          {
+            "id": 5,
+            "titulo": "Biografias",
+            "categoria": "biografia"
+          },
+          {
+            "id": 6,
+            "titulo": "Crime",
+            "categoria": "crime"
+          },
+          {
+            "id": 7,
+            "titulo": "Educação",
+            "categoria": "educacao"
+          },
+          {
+            "id": 8,
+            "titulo": "Fantasia",
+            "categoria": "fantasia"
+          },
+          {
+            "id": 9,
+            "titulo": "Gastronomia",
+            "categoria": "gastronomia"
+          },
+          {
+            "id": 10,
+            "titulo": "História",
+            "categoria": "historia"
+          },
+          {
+            "id": 11,
+            "titulo": "HQ's",
+            "categoria": "hq"
+          },
+          {
+            "id": 12,
+            "titulo": "Infantil",
+            "categoria": "infantil"
+          },
+          {
+            "id": 13,
+            "titulo": "Literatura",
+            "categoria": "literatura"
+          },
+          {
+            "id": 14,
+            "titulo": "Profissional",
+            "categoria": "profissional"
+          },
+          {
+            "id": 15,
+            "titulo": "Religião",
+            "categoria": "religiao"
+          },
+          {
+            "id": 16,
+            "titulo": "Romance",
+            "categoria": "romance"
+          }
+    ]
+}

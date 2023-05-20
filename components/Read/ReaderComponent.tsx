@@ -1,23 +1,13 @@
-import { Reader, useReader } from "@epubjs-react-native/core";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useFileSystem } from "@epubjs-react-native/expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Slider } from "@miblanchard/react-native-slider";
+import { Text, useWindowDimensions, View } from "react-native";
+import React, { memo, useLayoutEffect, useState } from "react";
+import { Reader, useReader } from "@epubjs-react-native/core";
+// import { Slider } from "@miblanchard/react-native-slider";
 import { StatusBar } from "expo-status-bar";
 // import I18n from 'i18n-js'
-import React, { memo, useEffect, useLayoutEffect, useState } from "react";
-import { PanResponder, Text, useWindowDimensions, View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import LoaderBook from "../Loader/LoaderBook";
-import {
-  AntDesign,
-  Entypo,
-  Feather,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
-// import { useTypedNavigation } from '../../../hook/useTypedNavigation'
-// import { useTypedSelector } from '../../../hook/useTypedSelector'
-// import { useAddBookToEndedBookMutation, useAddBookToStartReadingMutation } from '../../../store/api/book/mutation'
-// import Loader from '../../ui/Loader'
 import Settings from "./ui/Settings/Settings";
 import { dark, light, sepia } from "./ui/Theme";
 
@@ -35,23 +25,15 @@ const ReaderComponent = (props: {
   const [isVisible, setIsVisible] = useState(false);
   const [fontFamiles, setFontFamiles] = useState("Arial");
   const [LoadingfontSize, setLoadingFontSize] = useState(0);
-  const [totalLocations, setTotalLocations] = useState<any>();
-
-  // dialog de close
-  const DOUBLE_PRESS_DELAY = 400;
-  const [lastTap, setLastTap] = useState(0);
-  const [isTerminated, setTerminated] = useState(false);
-  const [touchStartTime, setTouchStartTime] = useState(0);
 
   const {
+    search,
+    changeTheme,
+    goToLocation,
+    searchResults,
     changeFontSize,
     currentLocation,
-    searchResults,
-    search,
-    goToLocation,
     changeFontFamily,
-    changeTheme,
-    // getLocations,
   } = useReader();
 
   useLayoutEffect(() => {
@@ -169,15 +151,16 @@ const ReaderComponent = (props: {
             style={{
               position: "absolute",
               bottom: 0,
-              height: show ? "50%" : 0,
+              height: show ? "100%" : 0,
               width: "100%",
-              // backgroundColor: "red",
+              backgroundColor: "rgba(0, 0, 0, 0.3)",
             }}
           >
             <Settings
               BookId={props.BookId}
               toc={toc}
               isVisible={show}
+              setShow={setShow}
               setIsVisible={setIsVisible}
               search={search}
               searchResults={searchResults}

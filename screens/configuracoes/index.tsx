@@ -1,28 +1,29 @@
 import { FloatingLabelInput } from "react-native-floating-label-input";
-import React, { useState, useEffect, useContext } from "react";
+import { formatTel } from "../../utils/FormatarTelefone";
+import NetInfo from "@react-native-community/netinfo";
 import background from "../../assets/background.png";
+import React, { useState, useContext } from "react";
+import { formatCpf } from "../../utils/FormatarCpf";
 import avatar from "../../assets/avatar.png";
 import app from "../../app.json";
 import {
   View,
   Text,
+  Image,
   ScrollView,
-  StyleSheet,
-  ActivityIndicator,
   ImageBackground,
   TouchableOpacity,
-  Image,
+  ActivityIndicator,
 } from "react-native";
 
 import {
-  AntDesign,
   Entypo,
   Feather,
-  Fontisto,
   Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
   Octicons,
+  AntDesign,
+  MaterialIcons,
+  MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import AuthContext from "../../contexts/auth";
 import { Controller, useForm } from "react-hook-form";
@@ -32,13 +33,13 @@ import { Button } from "react-native-paper";
 const Configuracoes: React.FC = ({ navigation }: any) => {
   const [show] = useState(false);
   const [screen, setScreen] = useState("basicos");
-  const [editable, setEditable] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [conectado, setConectado] = useState<boolean | null>();
   const { user, signIn, signOutClearAll }: any = useContext(AuthContext);
   const {
-    control,
     reset,
+    control,
     setValue,
     handleSubmit,
     formState: { errors },
@@ -46,10 +47,17 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      // const unsubscribe = NetInfo.addEventListener((state) => {
-      setConectado(true);
-      // });
-      // unsubscribe();
+      // let cpf = formatCpf(user.documento);
+      let telefone = formatTel(user.telefone);
+      const unsubscribe = NetInfo.addEventListener((state) => {
+        setConectado(true);
+      });
+      // setValue("CPF", cpf);
+      setValue("Nome", user.nome);
+      setValue("Email", user.email);
+      setValue("Telefone", telefone);
+      setIsFocused(true);
+      unsubscribe();
 
       setIsFocused(true);
 
@@ -100,7 +108,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   onBlur={onBlur}
                   onChangeText={(value) => onChange(value)}
                   value={value}
-                  editable={editable}
+                  editable={!loading}
                 />
               </View>
             )}
@@ -137,7 +145,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   onBlur={onBlur}
                   onChangeText={(value) => onChange(value)}
                   value={value}
-                  editable={editable}
+                  editable={!loading}
                 />
               </View>
             )}
@@ -147,7 +155,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
               marginTop: 80,
               height: 60,
               justifyContent: "center",
-              backgroundColor: "#F96D41",
+              backgroundColor: !loading ? "#F96D41" : "grey",
             }}
             icon="content-save"
             mode="contained"
@@ -258,6 +266,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   onBlur={onBlur}
                   onChangeText={(value) => onChange(value)}
                   value={value}
+                  editable={!loading}
                 />
               </View>
             )}
@@ -305,6 +314,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
                   onBlur={onBlur}
                   onChangeText={(value) => onChange(value)}
                   value={value}
+                  editable={!loading}
                 />
               </View>
             )}
@@ -317,7 +327,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
               marginTop: 80,
               height: 60,
               justifyContent: "center",
-              backgroundColor: "#F96D41",
+              backgroundColor: !loading ? "#F96D41" : "grey",
             }}
             icon="content-save"
             mode="contained"

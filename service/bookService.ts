@@ -35,7 +35,7 @@ const getBooksDashboard = async (params: any) => {
 
 
     try {
-        let favoritos = api.get(`http://192.168.0.104:3000/books`, {
+        let favoritos = api.get(`http://192.168.0.106:3000/books`, {
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Content-Type": "application/json;charset=UTF-8",
@@ -44,7 +44,7 @@ const getBooksDashboard = async (params: any) => {
             }
         })
 
-        let iniciais = api.get(`http://192.168.0.104:3000/books`, {
+        let iniciais = api.get(`http://192.168.0.106:3000/books`, {
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Content-Type": "application/json;charset=UTF-8",
