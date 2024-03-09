@@ -40,7 +40,6 @@ const Entrar: React.FC = ({ navigation }: any) => {
         if (resp.status == 200) {
           signIn(resp.data);
         } else {
-          console.log(resp);
           showMessage(resp.Erro);
         }
       })

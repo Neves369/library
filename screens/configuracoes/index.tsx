@@ -2,7 +2,7 @@ import { FloatingLabelInput } from "react-native-floating-label-input";
 import { formatTel } from "../../utils/FormatarTelefone";
 import NetInfo from "@react-native-community/netinfo";
 import background from "../../assets/background.png";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import { formatCpf } from "../../utils/FormatarCpf";
 import avatar from "../../assets/avatar.png";
 import app from "../../app.json";
@@ -14,6 +14,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
 
 import {
@@ -29,14 +30,18 @@ import AuthContext from "../../contexts/auth";
 import { Controller, useForm } from "react-hook-form";
 import { useFocusEffect } from "@react-navigation/native";
 import { Button } from "react-native-paper";
+import userService from "../../service/userService";
+import IUser from "../../models/IUser";
+import { sign } from "crypto";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Configuracoes: React.FC = ({ navigation }: any) => {
   const [show] = useState(false);
-  const [screen, setScreen] = useState("basicos");
   const [loading, setLoading] = useState(false);
+  const [screen, setScreen] = useState("basicos");
   const [isFocused, setIsFocused] = useState(false);
   const [conectado, setConectado] = useState<boolean | null>();
-  const { user, signIn, signOutClearAll }: any = useContext(AuthContext);
+  const { user, signOutClearAll, showMessage }: any = useContext(AuthContext);
   const {
     reset,
     control,
@@ -46,16 +51,15 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
   } = useForm();
 
   useFocusEffect(
-    React.useCallback(() => {
-      // let cpf = formatCpf(user.documento);
-      let telefone = formatTel(user.telefone);
+    useCallback(() => {
+      // let telefone = formatTel(user.telefone);
       const unsubscribe = NetInfo.addEventListener((state) => {
         setConectado(true);
       });
-      // setValue("CPF", cpf);
+
       setValue("Nome", user.nome);
       setValue("Email", user.email);
-      setValue("Telefone", telefone);
+      // setValue("Telefone", telefone);
       setIsFocused(true);
       unsubscribe();
 
@@ -151,6 +155,9 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
             )}
           />
           <Button
+            labelStyle={{
+              color: "white",
+            }}
             style={{
               marginTop: 80,
               height: 60,
@@ -159,7 +166,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
             }}
             icon="content-save"
             mode="contained"
-            onPress={() => console.log("Pressed")}
+            onPress={handleSubmit(!loading ? salvar : () => {})}
           >
             Salvar Dados
           </Button>
@@ -323,6 +330,9 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
             <Text>Confirmação da nova senha necessária.</Text>
           )}
           <Button
+            labelStyle={{
+              color: "white",
+            }}
             style={{
               marginTop: 80,
               height: 60,
@@ -331,7 +341,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
             }}
             icon="content-save"
             mode="contained"
-            onPress={() => console.log("Pressed")}
+            onPress={handleSubmit(!loading ? salvarSenha : () => {})}
           >
             Salvar Dados
           </Button>
@@ -451,7 +461,10 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
           </Text>
         </TouchableOpacity>
 
-        <View
+        <TouchableOpacity
+          onPress={() => {
+            showMessage("Esta função ainda não está disponível");
+          }}
           style={{
             backgroundColor: "rgba(29, 29, 29, 0.9)",
             padding: 5,
@@ -488,9 +501,12 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
           >
             Limpar Cache
           </Text>
-        </View>
+        </TouchableOpacity>
 
-        <View
+        <TouchableOpacity
+          onPress={() => {
+            showMessage("Esta função ainda não está disponível");
+          }}
           style={{
             backgroundColor: "rgba(29, 29, 29, 0.9)",
             padding: 5,
@@ -527,7 +543,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
           >
             Excluir Conta
           </Text>
-        </View>
+        </TouchableOpacity>
       </>
     );
   };
@@ -544,6 +560,7 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
           bottom: "0%",
           borderTopColor: "rgba(100, 103, 109, 0.2)",
           borderTopWidth: 1,
+          backgroundColor: "black",
         }}
       >
         <TouchableOpacity
@@ -620,6 +637,79 @@ const Configuracoes: React.FC = ({ navigation }: any) => {
       </View>
     );
   }
+
+  const salvar = async (data: any) => {
+    setLoading(true);
+    let usuarioAtualizado: IUser = {
+      id: user.id,
+      email: data.Email,
+      nome: data.Nome,
+      senha: user.senha,
+      token: user.token,
+    };
+    await userService
+      .atualizarUser(usuarioAtualizado)
+      .then(async (resp: any) => {
+        if (resp.status == 200) {
+          setIsFocused(false);
+          user.nome = usuarioAtualizado.nome;
+          user.email = usuarioAtualizado.email;
+          await AsyncStorage.setItem(
+            "@Usuario:user",
+            JSON.stringify(usuarioAtualizado)
+          );
+          setValue("Nome", usuarioAtualizado.nome);
+          setTimeout(() => {
+            setIsFocused(true);
+          }, 2000);
+        }
+        if (Math.trunc(resp.status / 100) == 4) {
+          showMessage(resp.Erro);
+        }
+        if (Math.trunc(resp.status / 100) == 5) {
+          showMessage(resp.Erro);
+        }
+      })
+      .catch((resp) => {
+        showMessage(resp);
+      })
+      .finally(() => setLoading(false));
+  };
+
+  const salvarSenha = async (data: any) => {
+    setLoading(true);
+
+    if (data.ConfirmarNovaSenha != data.NovaSenha) {
+      return showMessage("As senhas são diferentes!");
+    }
+    let usuarioAtualizado: IUser = {
+      id: user.id,
+      email: user.email,
+      nome: user.nome,
+      senha: data.NovaSenha,
+      token: user.token,
+    };
+    await userService
+      .atualizarUser(usuarioAtualizado)
+      .then((resp: any) => {
+        if (resp.status == 200) {
+          setIsFocused(false);
+          setTimeout(() => {
+            setIsFocused(true);
+          }, 2000);
+        }
+        if (Math.trunc(resp.status / 100) == 4) {
+          showMessage(resp.Erro);
+        }
+        if (Math.trunc(resp.status / 100) == 5) {
+          showMessage(resp.Erro);
+        }
+      })
+      .catch((resp) => {
+        showMessage(resp);
+      })
+      .finally(() => setLoading(false));
+  };
 
   return (
     <View style={{ flex: 1 }}>

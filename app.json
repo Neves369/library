@@ -2,7 +2,7 @@
   "expo": {
     "name": "litterae",
     "slug": "litterae",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/union.png",
     "splash": {
@@ -11,7 +11,7 @@
       "backgroundColor": "#000000"
     },
     "updates": {
-      "enabled": false,
+      "enabled": true,
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/c7804a98-0792-4411-8cb7-cf453948a2ef"
     },
@@ -27,7 +27,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.neves369.litterae",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/favicon.png"

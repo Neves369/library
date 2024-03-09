@@ -1,8 +1,7 @@
 import axios from "axios";
 import config from "./config";
 
-console.log(config.IP_DEV)
-const apiURL = `http://${config.IP_DEV}`;
+const apiURL = `http://192.168.108`;
 
 const api = axios.create({
   baseURL: `${apiURL}`,

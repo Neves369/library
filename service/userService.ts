@@ -17,12 +17,10 @@ const login = async (user: IUser) => {
     }
 }
 
-const salvarUser = async (user: IUser) => {
+const salvarUser = async (user: any) => {
     try {
-        return await api.post(`/cliente/salvar`, user, {
-            headers: {
-                Token: "77f04b5e-60af-40ac-9063-6bbebdfac8e8"
-            }
+        return await api.post(`/auth/register`, user, {
+            
         })
        
     } catch (error) {

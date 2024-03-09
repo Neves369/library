@@ -132,12 +132,16 @@ const Detalhes = ({ route, navigation }: any) => {
             }
           >
             <Menu.Item
-              onPress={() => {}}
+              onPress={() => {
+                showMessage("Esta função ainda não está disponível");
+              }}
               leadingIcon="star"
               title="Avaliar livro"
             />
             <Menu.Item
-              onPress={() => {}}
+              onPress={() => {
+                showMessage("Esta função ainda não está disponível");
+              }}
               leadingIcon="message"
               title="comentários"
             />
@@ -358,6 +362,7 @@ const Detalhes = ({ route, navigation }: any) => {
       `OfflineEpub${book.nome}`,
     ];
     await AsyncStorage.multiRemove(keys);
+    showMessage("Progresso excluído com sucesso!");
   }
 
   if (book) {

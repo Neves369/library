@@ -107,7 +107,7 @@ const Categorias: React.FC = ({ navigation }: any) => {
     },
   ];
 
-  const { user }: any = useContext(AuthContext);
+  const { user, showMessage }: any = useContext(AuthContext);
 
   function renderHeader() {
     return (
@@ -237,7 +237,9 @@ const Categorias: React.FC = ({ navigation }: any) => {
               justifyContent: "center",
               paddingTop: 10,
             }}
-            onPress={() => {}}
+            onPress={() => {
+              showMessage("Esta função ainda não está disponível");
+            }}
           >
             <FontAwesome5 name="dice" size={24} color="white" />
             <View style={{ flex: 1 }}>
@@ -335,6 +337,9 @@ const Categorias: React.FC = ({ navigation }: any) => {
             alignItems: "center",
             marginTop: 12,
           }}
+          onPress={() => {
+            showMessage("Esta função ainda não está disponível");
+          }}
         >
           <FontAwesome name="search" size={28} color="#64676D" />
         </TouchableOpacity>
@@ -345,6 +350,9 @@ const Categorias: React.FC = ({ navigation }: any) => {
             height: 70,
             alignItems: "center",
             marginTop: 12,
+          }}
+          onPress={() => {
+            showMessage("Esta função ainda não está disponível");
           }}
         >
           <Fontisto name="world-o" size={28} color="#64676D" />

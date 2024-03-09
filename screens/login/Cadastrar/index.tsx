@@ -1,5 +1,9 @@
 import { Text, useTheme, ActivityIndicator } from "react-native-paper";
-import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Entypo,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { TextInputMask } from "react-native-masked-text";
 import Background from "../../../assets/background.png";
 import { useForm, Controller } from "react-hook-form";
@@ -18,13 +22,14 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
+import userService from "../../../service/userService";
 
 const Cadastrar: React.FC = ({ navigation }: any) => {
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
   const [userInfo, setUserInfo] = useState<any>();
-  const { signIn }: any = useContext(AuthContext);
   const [screen, setScreen] = useState("básicos");
+  const { signIn, showMessage }: any = useContext(AuthContext);
   const [keyboardShow, setKeyboardShow] = useState(false);
   const {
     reset,
@@ -41,49 +46,36 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
 
   const handleCadastrar = async (data: any) => {
     setLoading(true);
+    if (data.Senha != data.Confirmar_Senha) {
+      return showMessage("As senhas são diferentes!");
+    }
+
     let user = {
+      nome: userInfo?.Nome,
       email: userInfo?.Email,
       dataNascimento: Moment(userInfo?.DataNascimento, "DD/MM/YYYY").format(
         "YYYY-MM-DD"
       ),
-      senha1: data.Senha,
-      senha2: data.Confirmar_Senha,
+      senha: data.Senha,
     };
-    console.log(user);
-    setLoading(false);
-    // await LoginService.primeiroAcesso(user)
-    // .then((resp: any)=>{
-    //   if(resp.status == 200){
-    //     setLoading(false)
-    //     if (resp.data.length >= 2){
-    //       navigation.navigate('EscolherSubContrato', resp.data);
-    //     }
-    //     else{
-    //       signIn(resp.data[0])
-    //     }
-    //   }
-    //   if(Math.trunc(resp.status/ 100)== 4){
-    //     return(
-    //       setLoading(false),
-    //       setTitle("Aviso"),
-    //       setMessage(resp.titulo),
-    //       setVisible(true)
-    //     )
-    //   }
-    //   if(Math.trunc(resp.status / 100) == 5){
-    //     return(
-    //       setLoading(false),
-    //       setTitle("Erro"),
-    //       setMessage(resp.titulo),
-    //       setVisible(true)
-    //     )
-    //   }
-    // })
-    // .catch((resp: any)=>{
-    //   return(
-    //     setLoading(false)
-    //   )
-    // })
+
+    await userService
+      .salvarUser(user)
+      .then((resp: any) => {
+        if (resp.status == 200) {
+          setLoading(false);
+          signIn(resp.data);
+        }
+        if (Math.trunc(resp.status / 100) == 4) {
+          return setLoading(false), showMessage(resp.Erro);
+        }
+        if (Math.trunc(resp.status / 100) == 5) {
+          return setLoading(false), showMessage(resp.Erro);
+        }
+      })
+      .catch((resp: any) => {
+        return setLoading(false), showMessage(resp.Erro);
+      });
   };
 
   function renderFirst() {
@@ -111,6 +103,53 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
         >
           CADASTRAR
         </Text>
+
+        <Controller
+          control={control}
+          name="Nome"
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <View
+              style={{
+                height: 40,
+                borderRadius: 10,
+                backgroundColor: "#f1f3f6",
+                marginTop: 10,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <FontAwesome5
+                name="signature"
+                style={styles.inputIcon}
+                size={24}
+                color="#5352A0"
+              />
+              <TextInput
+                style={{
+                  height: 40,
+                  width: "100%",
+                  flex: 1,
+                  fontSize: 16,
+                  color: "#333",
+                }}
+                placeholder="Nome"
+                autoCapitalize="none"
+                textContentType="name"
+                maxLength={60}
+                onBlur={onBlur}
+                onChangeText={(value: any) => onChange(value)}
+                value={value}
+              />
+            </View>
+          )}
+        />
+        {errors.Nome && (
+          <Text style={{ color: colors.error }}>Nome é obrigatório.</Text>
+        )}
 
         <Controller
           control={control}
@@ -469,8 +508,8 @@ const Cadastrar: React.FC = ({ navigation }: any) => {
           source={require("../../../assets/images/35235-reading.json")}
           autoPlay
           loop
-          // style={{ display: !keyboardShow ? "flex" : "none" }}
-          resizeMode="cover"
+          style={{ display: !keyboardShow ? "flex" : "none" }}
+          resizeMode="contain"
         />
         {screen == "básicos" ? renderFirst() : renderSecond()}
       </View>
