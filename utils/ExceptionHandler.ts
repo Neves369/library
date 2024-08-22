@@ -1,6 +1,6 @@
 const exceptionHandler = ( error: any ) => {
 
-
+    console.log("aqui", error)
     if(error.response.status != 200){
      return error.response.data;        
     }
